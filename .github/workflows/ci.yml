@@ -155,17 +155,15 @@ jobs:
       - name: Prose
         run: |
           status=0
-          vale --output=line --config .vale.ini --no-global \
+          vale --output=JSON --config .vale.ini --no-global \
             README.md AGENTS.md CONTRIBUTING.md CHANGELOG.md docs \
-            pyshellforge/README.md automation/features backlog > vale.txt || status=$?
-          cat vale.txt
-          # One annotation per finding, so a prose failure is readable from the
-          # pull request without opening the raw log.
-          while IFS= read -r finding; do
-            case "$finding" in
-              *:*:*:*) echo "::error file=${finding%%:*},line=$(printf '%s' "$finding" | cut -d: -f2),col=$(printf '%s' "$finding" | cut -d: -f3),title=Vale::${finding#*:*:*:}" ;;
-            esac
-          done < vale.txt
+            pyshellforge/README.md automation/features backlog > vale.json || status=$?
+          # One annotation per finding, at its own severity, so a prose failure is
+          # readable from the pull request instead of only from the raw log.
+          jq -r 'to_entries[] | .key as $file | .value[]
+                 | (if .Severity == "error" then "error" else "warning" end) as $level
+                 | "::\($level) file=\($file),line=\(.Line),col=\(.Span),title=\(.Check)::\(.Message)"' \
+            vale.json
           exit "$status"
 
       - name: Links
