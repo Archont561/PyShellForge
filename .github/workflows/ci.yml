@@ -48,6 +48,12 @@ jobs:
       - uses: prefix-dev/setup-pixi@v0
         with:
           pixi-version: latest
+      # convco skips merge commits unless `--merges` is given, and that default is
+      # the one this repository wants: GitHub's `Merge pull request #N from ...`
+      # subject is not a Conventional Commit, while every commit the gate is here
+      # to protect is a normal one. `main` is merged by rebase (see the "Merging"
+      # section of docs/development/contributing.md), so the next step catches a
+      # merge commit that reaches it anyway.
       - name: Check commit messages
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -59,7 +65,26 @@ jobs:
             echo "No base commit; skipping."
             exit 0
           fi
-          pixi run --locked -x convco check --merges "$BASE_SHA..$HEAD_SHA"
+          pixi run --locked -x convco check "$BASE_SHA..$HEAD_SHA"
+      - name: Reject merge commits on main
+        if: github.event_name == 'push'
+        env:
+          BASE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "No base commit; skipping."
+            exit 0
+          fi
+          merges="$(git rev-list --merges "$BASE_SHA..$HEAD_SHA")"
+          if [[ -n "$merges" ]]; then
+            echo "::error::main keeps a linear history: merge a pull request with rebase, never with a merge commit."
+            git log --oneline --merges "$BASE_SHA..$HEAD_SHA"
+            exit 1
+          fi
+          echo "No merge commits in $BASE_SHA..$HEAD_SHA."
 
   docs:
     name: Documentation and repository policy
