@@ -55,6 +55,7 @@ unrendered
 unrepresentable
 vale
 virtualenvs
+wordmark
 linter
 linting
 noqa
