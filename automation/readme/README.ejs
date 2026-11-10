@@ -215,9 +215,11 @@ See [CHANGELOG.md](CHANGELOG.md) for the state of `v<%- projectVersion || '0.1.0
 <% if (authorName) { %>
 👤 **<%- authorName %>**
 <% } %>
-<% if (authorWebsite) { -%>
-- Website: [<%- authorWebsite.replace(/^https?:\/\//, '').replace(/\/$/, '') %>](<%- authorWebsite %>)
-<% } -%>
+<%# The website is a literal, not `authorWebsite`: readme-md-generator resolves
+    that variable through the unauthenticated GitHub API, which is rate limited
+    and silently drops the line when a lookup fails, so readme-check used to
+    fail at random on a README that had not changed. -%>
+- Website: [archont561.github.io/Archont561](https://archont561.github.io/Archont561/)
 <% if (authorTwitterUsername) { -%>
 - Twitter: [@<%- authorTwitterUsername %>](https://twitter.com/<%- authorTwitterUsername %>)
 <% } -%>

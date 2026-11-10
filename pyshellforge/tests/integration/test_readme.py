@@ -43,6 +43,11 @@ PACKAGE_JSON_PATH = ROOT / "package.json"
 
 GENERATOR_URL = "https://github.com/kefranabg/readme-md-generator"
 
+#: The Author website line. It belongs to the template, not to the generator.
+WEBSITE_LINE = (
+    "- Website: [archont561.github.io/Archont561](https://archont561.github.io/Archont561/)"
+)
+
 #: Sections the README must keep, whatever the template looks like.
 REQUIRED_SECTIONS = [
     "What it is",
@@ -143,6 +148,24 @@ def test_no_template_artifacts_leaked() -> None:
     text = readme_text()
     for marker in ("<%", "%>", "&#34;", "&#39;", "[object Object]", "undefined"):
         assert marker not in text, f"unrendered template artifact {marker!r} in README.md"
+
+
+def test_author_website_is_template_owned() -> None:
+    """The Author website must not come from the generator's GitHub API lookup.
+
+    readme-md-generator fills ``authorWebsite`` from
+    ``https://api.github.com/users/<name>`` without a token, and returns nothing
+    when that lookup is rate limited. It then drops the line, and readme-check
+    fails on a README that did not change, so the template carries the URL.
+    """
+    template = TEMPLATE.read_text(encoding="utf-8")
+    assert "- Website: [<%- authorWebsite" not in template, (
+        "the Author website must be a literal, not the generator's API lookup"
+    )
+    assert WEBSITE_LINE in template
+    for readme in PROJECT_READMES:
+        content = readme.read_text(encoding="utf-8")
+        assert WEBSITE_LINE in content, f"{readme} lost the website line"
 
 
 def test_code_fences_are_balanced() -> None:
