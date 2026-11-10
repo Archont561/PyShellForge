@@ -34,8 +34,8 @@
 > Write shell scripts in Python. Render clean Bash.
 >
 > A Python-native DSL for building, composing and rendering structured Bash
-> scripts. The package is a skeleton: it exposes `VERSION` and nothing else, and
-> the renderer is planned work.
+> scripts. The first Bash renderer supports comments, literal assignments,
+> commands and checked text interpolation.
 
 ### 🏠 [Homepage](https://github.com/Archont561/PyShellForge#readme)
 
@@ -46,6 +46,8 @@ working on this repository:
 
 - [Documentation index](docs/README.md): everything, organized by purpose
 - [Install](docs/guides/install.md): prerequisites, installation, the locked developer sandbox
+- [AST design](docs/concepts/ast-design.md): nodes, renderers and interpolation
+- [API reference](docs/reference/api-reference.md): the script, nodes and Bash renderer
 - [Repository layout](docs/reference/repository-layout.md): what lives where and why
 - [Linting](docs/reference/linting.md): the Rude plugin, its rule codes, and the rules that wait for the validator
 - [Project status](docs/concepts/version-only-scaffold.md): what exists today and what the roadmap adds
@@ -67,7 +69,7 @@ pip install pyshellforge
 ## Usage
 
 ```sh
-python -c "import pyshellforge; print(pyshellforge.VERSION)"
+python -c 'from pyshellforge import ShellScript, Echo; print(ShellScript().add(Echo("Hello")).render())'
 ```
 
 ## Run tests

@@ -1,7 +1,7 @@
 ---
 id: m-2
 title: Bash foundation
-status: To Do
+status: In Progress
 ---
 
 ## Goal

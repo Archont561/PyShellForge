@@ -1,7 +1,7 @@
 """``pyshellforge.VERSION`` has one source of truth: ``pyproject.toml``.
 
-The package ships one module, so these tests are the whole product suite: the
-attribute, the resolution order behind it, and the fallbacks that keep
+These tests cover the attribute, the resolution order behind it, and the
+fallbacks that keep
 ``import pyshellforge`` working outside a source checkout.
 """
 
@@ -45,8 +45,9 @@ class TestThePackageAttribute:
     def test_version_is_semver_shaped(self) -> None:
         assert SEMVER.match(pyshellforge.VERSION), pyshellforge.VERSION
 
-    def test_the_module_exports_only_the_version(self) -> None:
-        assert pyshellforge.__all__ == ["VERSION"]
+    def test_the_module_exports_the_version_and_script_api(self) -> None:
+        assert "VERSION" in pyshellforge.__all__
+        assert "ShellScript" in pyshellforge.__all__
 
 
 class TestReadVersion:

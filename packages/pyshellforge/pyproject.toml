@@ -89,7 +89,7 @@ packages = ["src/pyshellforge"]
 
 [tool.hatch.build.targets.sdist]
 # The sdist carries what the suite needs if it is ever unpacked and tested:
-include = ["src", "tests", "README.md"]
+include = ["src", "tests", "features", "README.md"]
 
 # Run from the repository root with an explicit configuration file:
 #   python -m pytest -c packages/pyshellforge/pyproject.toml               # the product suite

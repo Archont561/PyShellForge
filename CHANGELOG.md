@@ -28,6 +28,12 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **The Bash foundation renders structured scripts.** `ShellScript` collects
+  comments, literal assignments, commands and checked `Echo` templates; the
+  `BashRenderer` quotes values and rejects undeclared interpolations. Golden
+  scripts are checked with `bash -n` and `shfmt` in CI.
+
+
 - **Clean Code is enforced across the repository.** `rude` and
   `rude-clean-code` run through `automation.clean_code`, the doit gate, hooks,
   and CI. CC101 allows 60 lines including docstrings; the other eight rules use

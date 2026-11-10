@@ -4,11 +4,10 @@ Start with the page that matches what you are doing. Every page here is checked 
 `python -m automation.docs` (structure, navigation, links, anchors) and by
 markdownlint-cli2, Vale and lychee in CI.
 
-The generator lives in `packages/pyshellforge/` and is a skeleton: its single module,
-`packages/pyshellforge/src/pyshellforge/__init__.py`, exposes `VERSION`, read from the
-manifest beside it, and nothing renders shell yet. `packages/pyshellforge-rude/` is the
-second distribution, a Rude plugin that checks the casing conventions of a
-definition; it is the one thing that can be installed and used today.
+The generator lives in `packages/pyshellforge/`. Its first Bash renderer handles
+comments, literal assignments, commands and checked text interpolation. The
+separate `packages/pyshellforge-rude/` distribution provides casing rules for
+definitions.
 
 ## Concepts
 
@@ -16,7 +15,8 @@ What exists today and what is planned.
 
 | Page | Covers |
 | --- | --- |
-| [Project status](concepts/version-only-scaffold.md) | The skeleton, how `VERSION` resolves, the roadmap |
+| [Project status](concepts/version-only-scaffold.md) | The Bash foundation, version resolution and roadmap |
+| [AST design](concepts/ast-design.md) | Nodes, renderers and interpolation |
 
 ## Guides
 
@@ -30,6 +30,7 @@ Installing, using and operating the project.
 
 | Page | Covers |
 | --- | --- |
+| [API reference](reference/api-reference.md) | Script container, nodes, renderer and errors |
 | [Repository layout](reference/repository-layout.md) | What lives where and why |
 | [Linting](reference/linting.md) | The Rude plugin, its rule codes, and the rules that wait for the validator |
 

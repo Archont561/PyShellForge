@@ -19,8 +19,9 @@ collects the product suite only.
 
 | Path | Contents |
 | --- | --- |
-| `packages/pyshellforge/tests/unit/` | `test_version.py`: `VERSION` and the order it is resolved in |
-| `packages/pyshellforge/tests/integration/` | `test_readme.py`: the generated READMEs, their links and their metadata |
+| `packages/pyshellforge/tests/unit/` | Version resolution, nodes, quoting and interpolation |
+| `packages/pyshellforge/tests/integration/` | Generated READMEs and Bash golden scripts |
+| `packages/pyshellforge/tests/bdd/` | Product scenario steps and bindings |
 | `automation/tests/` | Unit and integration tests for the modules in `automation/` |
 | `automation/tests/bdd/` | Step definitions binding `automation/features/**/*.feature` with pytest-bdd |
 | `packages/pyshellforge-rude/tests/` | The Rude plugin: rule codes, severities, and the markers that scope a file |
@@ -44,8 +45,7 @@ The automation suite carries its own Gherkin scenarios in
 `automation/features/`, so a change to a module and the scenario that describes
 it are always in the same tree.
 
-The product suite is small because the package is: one module, one attribute.
-`test_version.py` covers the three resolution steps (a `packages/pyshellforge/pyproject.toml`
+The product suite covers the renderer and its supported nodes. `test_version.py` covers the three resolution steps (a `packages/pyshellforge/pyproject.toml`
 found by walking up from the module, installed distribution metadata, the fallback
 constant) and the shapes of a manifest that must be rejected, so
 `import pyshellforge` is proven not to raise in a wheel, a checkout or a vendored
@@ -75,9 +75,23 @@ pixi run automation test-all         # pytest-bdd executes the scenarios
 
 A new behaviour starts with a scenario and a failing test. `automation.gherkin`
 reports `PSF-FEAT-006` for a step with no definition and `PSF-FEAT-007` for a
-definition no scenario uses, so the two sides cannot drift. The product has no
-feature file because it has no rendering behaviour to describe yet; the first one
-lands with the first node.
+definition no scenario uses, so the two sides cannot drift. Product scenarios live
+in `packages/pyshellforge/features/` and run with the product suite.
+
+## Shell syntax and formatting
+
+Golden scripts live in `packages/pyshellforge/tests/golden/`. The integration
+suite compares rendered scripts to these files and runs `bash -n` on every one
+when Bash is installed. CI also runs the following command on every golden file:
+
+```sh
+python -m pip install "shfmt-py==4.2.0"
+shfmt -d -i 4 -ci packages/pyshellforge/tests/golden/*.sh
+```
+
+The integration suite demonstrates that a deliberately misformatted script fails
+when `shfmt` is available. The formatter is a development tool, not a runtime
+dependency of the package.
 
 ## Coverage
 

@@ -3,7 +3,7 @@
 ```text
 packages/              importable distributions, one project directory each
   pyshellforge/        the distribution: package, tests and manifest
-    src/               the package: __init__.py exposes VERSION, plus py.typed
+    src/               the typed package: AST, core, renderers and version
     tests/             unit and integration tests for the distribution
     pyproject.toml     metadata, build targets, pytest and mypy configuration
     tox.ini            the multi-interpreter matrix

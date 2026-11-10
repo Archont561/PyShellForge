@@ -265,7 +265,7 @@ def test_prerequisites_come_from_engines() -> None:
     assert f"python-{quote(python, safe='')}-blue" in text
     assert f'alt="python {python.removeprefix(">=")}+"' in text
     assert 'alt="python >' not in text
-    # Nothing renders shell yet, so the README must not claim a shell prerequisite.
+    # Rendering does not require Bash; executing generated scripts does.
     assert "bash" not in engines
 
 
@@ -314,21 +314,20 @@ def test_the_nested_readme_is_the_packaging_readme() -> None:
 # ---------------------------------------------------------------------------
 # the README makes no claim the package cannot back
 # ---------------------------------------------------------------------------
-def test_readme_does_not_promise_a_renderer() -> None:
-    """The skeleton ships ``VERSION``; the landing page must not document more."""
+def test_readme_describes_the_available_renderer() -> None:
+    """The landing page describes the implemented subset without promising a CLI."""
     text = " ".join(readme_text().split())
-    assert "exposes `VERSION` and nothing else" in text
-    for absent in ("psf render", "psf validate", "ShellScript("):
-        assert absent not in text, f"the README documents {absent!r}, which does not exist"
+    assert "first Bash renderer" in text
+    assert "psf render" not in text
+    assert "psf validate" not in text
 
 
 def test_the_status_page_states_what_is_missing() -> None:
-    """Moving prose into ``docs/`` must not soften it."""
     page = ROOT / "docs" / "concepts" / "version-only-scaffold.md"
     text = " ".join(page.read_text(encoding="utf-8").split())
-    assert "There is no renderer, no AST and no CLI yet" in text
-    for absent in ("psf render", "psf validate", "ShellScript("):
-        assert absent not in text, f"the status page documents {absent!r}"
+    assert "There is no CLI or other shell renderer yet" in text
+    assert "psf render" not in text
+    assert "psf validate" not in text
 
 
 # ---------------------------------------------------------------------------

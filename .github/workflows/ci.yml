@@ -120,7 +120,9 @@ jobs:
       - name: Gherkin and step definitions
         run: python -m automation.gherkin
       - name: Gherkin style
-        run: python -m gherlint lint automation/features
+        run: |
+          python -m gherlint lint automation/features
+          python -m gherlint lint packages/pyshellforge/features
       # GitHub renders forms from YAML and fails quietly, so the schema is
       # checked here. Rendering them needs `gh form preview` and a browser.
       - name: Issue forms
@@ -230,6 +232,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e "packages/pyshellforge[dev]" -e "packages/pyshellforge-rude[dev]" actionlint-py
+      - name: Install shell formatter
+        run: python -m pip install "shfmt-py==4.2.0"
+      - name: Check generated shell formatting
+        run: shfmt -d -i 4 -ci packages/pyshellforge/tests/golden/*.sh
       - run: ruff check .
       - run: ruff format --check .
       - run: mypy --config-file packages/pyshellforge/pyproject.toml
