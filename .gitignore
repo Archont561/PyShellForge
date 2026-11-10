@@ -1,0 +1,61 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test & type-check caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+
+# Rendered artefacts produced while experimenting
+/deploy.sh
+/backup.sh
+/build.sh
+/out/
+rendered/
+
+# README generation tooling (optional, Node only)
+node_modules/
+npm-debug.log*
+
+# Developer environment and sandbox
+.pixi/
+pixi-sandbox-pack/
+
+# Coverage, prose and link-check caches
+coverage.xml
+coverage_html/
+.lycheecache
+
+# Repository script output
+sandbox/
+
+# doit task state
+.doit.db
+.doit.db.*
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp

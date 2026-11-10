@@ -1,0 +1,35 @@
+# Link checking for documentation, guides and the generated README.
+#
+#   lychee --config lychee.toml --no-progress .        # local / CI
+#   lychee --config lychee.toml --offline .            # no network (sandbox)
+#
+# lychee checks external URLs and, with include_fragments, anchors of relative
+# links. Anchor semantics are also enforced offline by `python -m automation.docs`.
+
+timeout = 20
+max_retries = 2
+max_concurrency = 8
+include_fragments = "full"
+include_verbatim = false
+accept = ["200..=204", "301", "302", "403", "429"]
+extensions = ["md"]
+
+# Shields.io and GitHub's own UI endpoints rate-limit CI runners; badge targets
+# are static and are not worth failing a build over. Deep links into the GitHub
+# repository are excluded because they point at files in the published tree,
+# which lags the working copy during development.
+exclude = [
+  '^https://img\.shields\.io/',
+  '^https://github\.com/Archont561/PyShellForge',
+  '^https://codecov\.io/gh/Archont561/PyShellForge',
+  '^https://prefix\.dev/',
+  '^https://pixi\.sh/',
+]
+
+# Generated and vendored trees.
+exclude_path = [
+  '^\.pixi/',
+  '^node_modules/',
+  '^coverage_html/',
+  '^dist/',
+]
