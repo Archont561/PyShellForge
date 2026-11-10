@@ -17,8 +17,10 @@ A user can render with `--shell posix`, get either portable output or a clear
 
 Starts after `task-11`: a POSIX backend can only diverge from Bash once a Bash
 renderer exists, and the plugin surface needs the registry that comes with it.
+The exception is `task-12`, which needs no renderer and ships first.
 
 ## Tasks
 
 - `task-1`: POSIX backend hardening
 - `task-2`: Plugin API documentation
+- `task-12`: Rude plugin distribution with the scope casing rules

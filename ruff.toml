@@ -28,6 +28,7 @@ ignore = [
 known-first-party = [
   "automation",
   "pyshellforge",
+  "pyshellforge_rude",
   "support",
   "steps_agents",
   "steps_automation_cli",

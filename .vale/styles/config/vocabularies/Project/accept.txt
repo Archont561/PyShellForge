@@ -55,3 +55,9 @@ unrendered
 unrepresentable
 vale
 virtualenvs
+linter
+linting
+noqa
+pyproject
+ANSI
+UTF
