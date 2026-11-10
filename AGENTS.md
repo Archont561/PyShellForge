@@ -266,7 +266,7 @@ rule to silence a finding. The policy is in
   a Git checkout need platform-specific setup, and every agent that matters reads
   `AGENTS.md` directly.
 - `main` takes pull requests by rebase: `gh pr merge --rebase <number>`. Never
-  create a merge commit — GitHub's `Merge pull request #N from ...` subject is not
+  create a merge commit: GitHub's `Merge pull request #N from ...` subject is not
   a Conventional Commit, and the `Reject merge commits on main` step in
   `ci.yml` fails the push that adds one. Details in
   [`docs/development/contributing.md`](docs/development/contributing.md#merging).
