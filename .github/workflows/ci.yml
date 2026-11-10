@@ -63,11 +63,14 @@ jobs:
         run: |
           set -euo pipefail
           # A force-push rewrites the branch, so the `before` commit recorded in
-          # the event is no longer in the clone and `before..head` cannot be
-          # walked. Fall back to the merge base with the default branch: that is
-          # the set of commits this gate means for a branch push, and it is empty
-          # for a branch that was just rebased onto it.
-          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+          # the event is either gone from the clone or no longer an ancestor of
+          # `head`, and `before..head` stops describing what was pushed. Fall back
+          # to the merge base with the default branch: that is the set of commits
+          # this gate means for a branch push, and it is empty for a branch that
+          # was just rebased onto it.
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] \
+            || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null \
+            || ! git merge-base --is-ancestor "$BASE_SHA" "$HEAD_SHA"; then
             BASE_SHA="$(git merge-base "origin/${DEFAULT_BRANCH}" "$HEAD_SHA" || true)"
           fi
           if [[ -z "$BASE_SHA" || "$BASE_SHA" == "$HEAD_SHA" ]]; then
@@ -169,11 +172,13 @@ jobs:
           set -euo pipefail
           # A pull request is compared with its merge base. A push is compared
           # with the commit it built on, except when a force-push or a new branch
-          # leaves that commit out of the clone, in which case the merge base with
-          # the default branch stands in for it.
+          # leaves that commit out of the clone or off the branch history, in
+          # which case the merge base with the default branch stands in for it.
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
             BASE_SHA="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
-          elif [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+          elif [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] \
+            || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null \
+            || ! git merge-base --is-ancestor "$BASE_SHA" "$HEAD_SHA"; then
             BASE_SHA="$(git merge-base "origin/${DEFAULT_BRANCH}" "$HEAD_SHA")"
           fi
           git diff --check "$BASE_SHA" "$HEAD_SHA" --
