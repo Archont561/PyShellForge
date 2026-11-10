@@ -154,13 +154,20 @@ jobs:
       # sync` (and no registry download) is needed here.
       - name: Prose
         run: |
-          set +e
-          vale --config .vale.ini --no-global README.md AGENTS.md CONTRIBUTING.md CHANGELOG.md docs pyshellforge/README.md automation/features backlog > vale.txt 2>&1
-          status=$?
-          if [ "$status" -ne 0 ]; then
-            { echo '```'; cat vale.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
-          fi
+          status=0
+          vale --output=line --config .vale.ini --no-global \
+            README.md AGENTS.md CONTRIBUTING.md CHANGELOG.md docs \
+            pyshellforge/README.md automation/features backlog > vale.txt || status=$?
+          cat vale.txt
+          # One annotation per finding, so a prose failure is readable from the
+          # pull request without opening the raw log.
+          while IFS= read -r finding; do
+            case "$finding" in
+              *:*:*:*) echo "::error file=${finding%%:*},line=$(printf '%s' "$finding" | cut -d: -f2),col=$(printf '%s' "$finding" | cut -d: -f3),title=Vale::${finding#*:*:*:}" ;;
+            esac
+          done < vale.txt
           exit "$status"
+
       - name: Links
         uses: lycheeverse/lychee-action@v2
         with:
