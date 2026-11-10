@@ -189,6 +189,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the state of `v0.1.0`.
 
 👤 **PyShellForge contributors**
 
+- Website: [archont561.github.io/Archont561](https://archont561.github.io/Archont561/)
 - GitHub: [@Archont561](https://github.com/Archont561)
 
 ## 🤝 Contributing
