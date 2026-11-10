@@ -60,6 +60,8 @@ dev = [
     # Issue-form validation (automation.forms) reads YAML.
     "pyyaml>=6.0",
     "types-pyyaml>=6.0",
+    # The README banner is FIGlet art (automation.banner), rendered, not pasted.
+    "pyfiglet>=1.0.4,<2",
 ]
 # Documentation tooling: repository policy and Gherkin style. markdownlint-cli2,
 # Vale and lychee are standalone binaries wired through Pixi (see pixi.toml).
@@ -68,6 +70,8 @@ docs = [
     "gherlint>=0.5",
     # automation.forms validates the GitHub Issue Forms.
     "pyyaml>=6.0",
+    # automation.readme renders the banner, and CI checks the README here.
+    "pyfiglet>=1.0.4,<2",
 ]
 
 [project.urls]

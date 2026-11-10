@@ -28,6 +28,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **The README banner is rendered, not pasted.** `automation.banner` draws text
+  as FIGlet art with pyfiglet, and `automation.readme` replaces a marker in
+  `automation/readme/README.ejs` with its rendering of `PYSHELLFORGE`, so the
+  page and the font data cannot drift apart and `readme-check` catches a font
+  change. The same command draws any other text, `--comment` prefixes every row
+  so the art can serve as a script header, and `--list-fonts` prints the bundled
+  fonts. pyfiglet is a development dependency: the product does not import it,
+  no wheel ships it, and `dependencies = []` still holds.
+
 - **A Rude plugin checks the two casing conventions of a definition.**
   `packages/pyshellforge-rude/` is the repository's second distribution: a plugin that
   registers `PSF201` (a module-level binding becomes a global shell variable, so

@@ -21,7 +21,7 @@ automation/
 ├── tests/           unit and integration tests, plus the pytest-bdd steps
 │   └── bdd/         step modules and the runner that binds them to features/
 ├── readme/          README.ejs, the template both READMEs are generated from
-└── <module>/        one package per job: docs, forms, agents, release, restore
+└── <module>/        one package per job: banner, docs, forms, agents, release, restore
 ```
 
 Modules here are ordinary Python: they expose `main(argv)`, return an exit
@@ -33,7 +33,8 @@ tests in [`tests/`](tests/) and described in Gherkin under
 | Module | Run it with | Task | What it does |
 | --- | --- | --- | --- |
 | `automation.restore` | `python -m automation.restore` | `pixi run restore` | Installs Pixi when it is missing, solves the environment with `pixi install --locked` and installs the Lefthook hooks; `--check` reports state and changes nothing |
-| `automation.readme` | `python -m automation.readme` | `pixi run automation readme` | Regenerates `README.md` and `packages/pyshellforge/README.md` (the PyPI long description, with its links rebased) with readme-md-generator (npm) from `automation/readme/README.ejs`; `--check` fails when either file is stale |
+| `automation.banner` | `python -m automation.banner` | `pixi run automation banner` | Draws text as FIGlet art with pyfiglet. The banner in both READMEs is rendered here, not pasted, so the page and the font data cannot drift apart; `--comment` prefixes every row so the art can sit in a script header, and `--list-fonts` prints the bundled fonts |
+| `automation.readme` | `python -m automation.readme` | `pixi run automation readme` | Regenerates `README.md` and `packages/pyshellforge/README.md` (the PyPI long description, with its links rebased) with readme-md-generator (npm) from `automation/readme/README.ejs`, with the banner replaced by `automation.banner`; `--check` fails when either file is stale |
 | `automation.agents` | `python -m automation.agents --check` | `pixi run automation agents-check` | Validates the `agents-md` marker contract in `AGENTS.md`; `--bootstrap` creates the skeleton with the pinned npm CLI |
 | `automation.docs` | `python -m automation.docs` | `pixi run automation check-docs` | Validates `docs/`: required sections, navigation index, relative links, anchors, fenced-code languages, heading structure |
 | `automation.gherkin` | `python -m automation.gherkin` | `pixi run automation lint-features` | Lints Gherkin files and verifies that every step has a `pytest-bdd` definition and every definition is used |

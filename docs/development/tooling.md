@@ -56,7 +56,8 @@ each task's docstring.
 | `pixi run automation lint` / `format` / `format-check` | ruff |
 | `pixi run automation typecheck` | `mypy --config-file packages/pyshellforge/pyproject.toml` (strict) |
 | `pixi run automation check-docs` | `python -m automation.docs` |
-| `pixi run automation readme` / `readme-check` | Regenerate / verify `README.md` and `packages/pyshellforge/README.md` |
+| `pixi run automation readme` / `readme-check` | Regenerate / verify `README.md` and `packages/pyshellforge/README.md`, banner included |
+| `pixi run automation banner` | Draw text as FIGlet art (`automation.banner`); `--comment` prefixes each row for a script header |
 | `pixi run automation agents` / `agents-check` | Regenerate the marked AGENTS.md sections / verify the marker contract |
 | `pixi run automation lint-features` | `python -m automation.gherkin` |
 | `pixi run automation lint-markdown` | markdownlint-cli2 |
@@ -85,6 +86,7 @@ Tooling of our own is Python, in `automation/`, documented in
 | Module | Purpose |
 | --- | --- |
 | `python -m automation.readme` | Drive readme-md-generator over `automation/readme/README.ejs` |
+| `python -m automation.banner` | Draw text as FIGlet art with pyfiglet; the README banner comes from here |
 | `python -m automation.docs` | Validate documentation structure, navigation, links, anchors |
 | `python -m automation.gherkin` | Lint Gherkin and verify step definitions |
 | `python -m automation.agents` | Maintain `AGENTS.md` through the pinned `agents-md` CLI; `--check` validates it offline |

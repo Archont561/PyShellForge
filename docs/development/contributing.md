@@ -70,6 +70,11 @@ pixi run automation readme          # rewrite README.md (npx, no npm install nee
 pixi run automation readme-check    # exit 1 if README.md is stale; CI runs this
 ```
 
+The banner is generated too: the template marks where it belongs and
+[`automation.banner`](../../automation/banner/render.py) draws the project name in
+FIGlet art with pyfiglet, so regenerating rewrites the art and the freshness check
+catches a font change.
+
 `packages/pyshellforge/tests/integration/test_readme.py` fails if the version badge, the
 prerequisites, the author or the license disagree with the manifest or
 `package.json`, if a

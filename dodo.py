@@ -37,7 +37,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 
-from automation import agents, docs, forms, gherkin, readme, release
+from automation import agents, banner, docs, forms, gherkin, readme, release
 
 #: Defaults for every invocation of ``doit`` in this repository.
 DOIT_CONFIG = {
@@ -118,6 +118,11 @@ def task_readme() -> dict[str, object]:
 def task_readme_check() -> dict[str, object]:
     """Fail when either generated README is stale."""
     return {"basename": "readme-check", "actions": [_run(readme.main, ["--check"])]}
+
+
+def task_banner() -> dict[str, object]:
+    """Render the README wordmark, or any text, as FIGlet art."""
+    return {"basename": "banner", "actions": [_run(banner.main)]}
 
 
 def task_agents() -> dict[str, object]:
