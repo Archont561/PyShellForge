@@ -49,6 +49,8 @@ twine = ">=7,<8"
 # Task runner for the repository automation (`dodo.py`).
 doit = ">=0.36,<1"
 alint = ">=0.20,<1"
+# FIGlet art for the README banner (automation.banner reads it at generation time).
+pyfiglet = ">=1.0.4,<2"
 
 [tasks]
 # The entry points. Everything else is a doit task: `pixi run automation list`.

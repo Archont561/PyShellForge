@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from automation.banner import WORDMARK, render_banner
 from automation.readme import generate
 from automation.tests.conftest import FakeRunner
 
@@ -212,6 +213,39 @@ def test_relocate_links_rebases_only_relative_targets() -> None:
     assert "[docs](../docs/README.md)" in relocated
     assert "[site](https://example.com/x)" in relocated
     assert "[top](#what-it-is)" in relocated
+
+
+# -- the banner ---------------------------------------------------------------
+def test_the_template_marks_where_the_banner_belongs() -> None:
+    """The art is rendered, so the template holds a marker instead of the art."""
+    template = generate.TEMPLATE.read_text(encoding="utf-8")
+    assert generate.BANNER_MARKER in template
+    assert "██" not in template, "the art belongs to the generator, not the template"
+
+
+def test_inject_banner_replaces_the_marker() -> None:
+    content = f"<pre>\n{generate.BANNER_MARKER}</pre>\n"
+    assert generate.inject_banner(content, art="ART") == "<pre>\nART</pre>\n"
+
+
+def test_inject_banner_renders_the_wordmark_by_default() -> None:
+    content = f"<pre>\n{generate.BANNER_MARKER}</pre>"
+    assert generate.inject_banner(content) == f"<pre>\n{render_banner(WORDMARK)}</pre>"
+
+
+def test_inject_banner_leaves_a_page_without_the_marker_alone() -> None:
+    assert generate.inject_banner("# generated\n") == "# generated\n"
+
+
+def test_render_readme_renders_the_banner(repo: Path) -> None:
+    marked = f"<pre>\n{generate.BANNER_MARKER}</pre>\n"
+    result = generate.render_readme(
+        template=repo / "README.ejs",
+        package_json=repo / "package.json",
+        runner=FakeRunner(content=marked),
+    )
+    assert generate.BANNER_MARKER not in result.content
+    assert render_banner(WORDMARK) in result.content
 
 
 def test_relocate_links_at_the_root_changes_nothing() -> None:

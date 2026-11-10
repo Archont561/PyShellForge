@@ -7,6 +7,11 @@ idempotent, this script renders inside a temporary directory that contains only
 repository, author, license and ``engines`` prerequisites) and copies the result
 back into the repository.
 
+The template does not carry the banner either: it holds a marker, and
+:func:`inject_banner` replaces that marker with FIGlet art rendered by
+``automation.banner``. The freshness check therefore covers the banner as well,
+so the page and the font data cannot drift apart.
+
 Two files come out of the same template:
 
 * ``README.md`` at the repository root, the page GitHub shows;
@@ -38,6 +43,8 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from automation.banner import WORDMARK, render_banner
+
 #: Repository root, derived from this file (``automation/readme/generate.py``).
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,6 +72,10 @@ GENERATOR_PACKAGE = "readme-md-generator"
 
 #: Marker the generator writes into every README it produces.
 ATTRIBUTION = "This README was generated"
+
+#: Where the template wants the wordmark. It is an HTML comment, so a marker that
+#: ever survived into a page would be invisible rather than broken output.
+BANNER_MARKER = "<!-- psf-banner -->"
 
 #: A runner executes a command in ``cwd`` and returns its exit status.
 Runner = Callable[..., int]
@@ -119,6 +130,25 @@ def project_depth(target: Path) -> int:
         return 0
 
 
+def inject_banner(content: str, *, art: str | None = None) -> str:
+    """Replace every banner marker in ``content`` with the rendered wordmark.
+
+    Args:
+        content: the generated page.
+        art: the art to insert; rendered from :data:`automation.banner.WORDMARK`
+            when omitted, and injected by the tests to keep them font-independent.
+
+    Returns:
+        ``content`` with the markers replaced, or unchanged when it has none. A
+        template without the marker is legitimate: the generator is also used on
+        throwaway templates that only exercise the metadata.
+    """
+    if BANNER_MARKER not in content:
+        return content
+    rendered = render_banner(WORDMARK) if art is None else art
+    return content.replace(BANNER_MARKER, rendered)
+
+
 def relocate_links(content: str, depth: int) -> str:
     """Rebase relative markdown links for a copy that sits ``depth`` levels down."""
     if depth <= 0:
@@ -163,7 +193,8 @@ def render_readme(
         if not produced.is_file():
             msg = f"{GENERATOR_PACKAGE} did not produce a README.md"
             raise RuntimeError(msg)
-        return ReadmeResult(content=produced.read_text(encoding="utf-8"), command=tuple(command))
+        content = inject_banner(produced.read_text(encoding="utf-8"))
+        return ReadmeResult(content=content, command=tuple(command))
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
 

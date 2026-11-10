@@ -42,7 +42,8 @@ Python 3.11, and the library roadmap lives in `backlog/`.
 - Conventions and workflows: `alint`, `actionlint`, `lint-features`, `check-forms`.
 - Release: `check-release` (tag/version guard) and `release-build` (guard, build,
   `twine check`); publishing happens in CI on a `v*` tag.
-- Generated files: `readme` and `agents`, plus their `-check` counterparts.
+- Generated files: `readme` and `agents`, plus their `-check` counterparts;
+  `banner` draws the FIGlet art the README carries.
 - Everything at once: `pixi run automation check`, or
   `pixi run automation -n 4 check` to run the independent gates in parallel.
 <!-- agents-md:end id=commands -->
@@ -103,7 +104,9 @@ the source of truth for what the library will become.
   `[project].version`; a second hard-coded copy is a defect, and the fallbacks
   exist only so an import never raises.
 - **The README and `AGENTS.md` are generated.** Edit `automation/readme/README.ejs`
-  and the marked sections of `AGENTS.md`, never the rendered files by hand.
+  and the marked sections of `AGENTS.md`, never the rendered files by hand. The
+  banner is no exception: the template marks where it belongs and
+  `automation.banner` renders the project name in FIGlet art with pyfiglet.
 - **Repository tooling is Python.** Two npm binaries are pinned in `package.json`
   and driven by Python wrappers: `readme-md-generator` (`automation.readme`) and
   `agents-md` (`automation.agents`).

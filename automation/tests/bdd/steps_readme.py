@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 from pytest_bdd import given, then, when
 
+from automation.banner import WORDMARK, render_banner
 from automation.readme import generate
 
 ATTRIBUTED = (
@@ -99,6 +100,14 @@ def differs(context: dict[str, Any]) -> None:
     repo.target.write_text(COMMITTED, encoding="utf-8")
 
 
+@given("a template that marks where the banner belongs")
+def marked_template(context: dict[str, Any]) -> None:
+    repo: ReadmeRepo = context["repo"]
+    marked = f"<pre>\n{generate.BANNER_MARKER}</pre>\n"
+    repo.template.write_text(marked, encoding="utf-8")
+    repo.generator.content = marked + ATTRIBUTED
+
+
 @given("the generator produces a README without the attribution footer")
 def unattributed(context: dict[str, Any]) -> None:
     repo: ReadmeRepo = context["repo"]
@@ -168,3 +177,11 @@ def readme_written(context: dict[str, Any]) -> None:
 def readme_unchanged(context: dict[str, Any]) -> None:
     repo: ReadmeRepo = context["repo"]
     assert repo.target.read_text(encoding="utf-8") == COMMITTED
+
+
+@then("the README carries the rendered wordmark")
+def rendered_wordmark(context: dict[str, Any]) -> None:
+    repo: ReadmeRepo = context["repo"]
+    page = repo.target.read_text(encoding="utf-8")
+    assert generate.BANNER_MARKER not in page, "the marker must not survive generation"
+    assert render_banner(WORDMARK) in page

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from .generate import (
     ATTRIBUTION,
+    BANNER_MARKER,
     GENERATOR_PACKAGE,
     PACKAGE_JSON,
     REPO_ROOT,
@@ -15,6 +16,7 @@ from .generate import (
     TEMPLATE,
     ReadmeResult,
     generator_command,
+    inject_banner,
     main,
     pinned_version,
     render_readme,
@@ -24,6 +26,7 @@ from .generate import (
 
 __all__ = [
     "ATTRIBUTION",
+    "BANNER_MARKER",
     "GENERATOR_PACKAGE",
     "PACKAGE_JSON",
     "REPO_ROOT",
@@ -31,6 +34,7 @@ __all__ = [
     "TEMPLATE",
     "ReadmeResult",
     "generator_command",
+    "inject_banner",
     "main",
     "pinned_version",
     "render_readme",

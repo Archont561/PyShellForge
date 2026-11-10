@@ -61,3 +61,5 @@ noqa
 pyproject
 ANSI
 UTF
+FIGlet
+pyfiglet

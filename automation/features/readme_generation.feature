@@ -25,6 +25,11 @@ Feature: README generation
     Then the command succeeds
     And the README contains the generated content
 
+  Scenario: The banner is rendered into the template marker
+    Given a template that marks where the banner belongs
+    When I regenerate the README
+    Then the README carries the rendered wordmark
+
   Scenario: Output without the generator attribution is rejected
     Given the generator produces a README without the attribution footer
     When I regenerate the README
