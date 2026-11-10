@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Archont561/PyShellForge/tree/main/docs
+    about: Guides, the API reference, diagnostics and the architecture notes.
+  - name: Contributing guide
+    url: https://github.com/Archont561/PyShellForge/blob/main/docs/development/contributing.md
+    about: Setup, the checks CI runs, and how a change ships.

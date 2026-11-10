@@ -1,0 +1,55 @@
+name: Feature request
+description: Propose package behaviour, tooling or a documentation change
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        PyShellForge aims to be a Python-native DSL that renders structured Bash,
+        and the package is a skeleton: it exposes `VERSION` and nothing else. A
+        proposal that adds behaviour has to say what the Bash should look like and
+        how a reviewer would check it.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to write, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API or behaviour
+      description: The Python surface you would like, and the Bash it should render.
+      render: python
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      multiple: true
+      options:
+        - Package API
+        - Renderer or backend
+        - Validation or diagnostics
+        - CLI
+        - Repository tooling
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Plain Bash, another library, or a manual step that already solves it.
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Would you implement it?
+      options:
+        - "Yes, with guidance"
+        - "Yes, on my own"
+        - "No, but I can review"
+        - "No"
