@@ -8,10 +8,11 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
-- **The README opens with the project's ASCII banner.** It sits inside a `text`
-  fence between the title and the badges, and a fence is left exactly as written,
-  so the columns keep their alignment. A test pins the row count and the width,
-  because a trimmed or wrapped row is the whole failure mode of ASCII art.
+- **The README opens with the project's ASCII banner.** The name is split over
+  two lines inside a `text` fence between the title and the badges, which keeps
+  the art inside 80 columns, and a fence is left exactly as written, so the
+  columns keep their alignment. A test pins the row count and the width, because
+  a trimmed or wrapped row is the whole failure mode of ASCII art.
 
 ### Changed
 
