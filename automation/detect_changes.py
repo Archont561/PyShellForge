@@ -96,6 +96,39 @@ def changed_files(base: str, head: str, *, runner: GitRunner = git_runner) -> li
     return [line.strip() for line in output.splitlines() if line.strip()]
 
 
+#: Suite a single changed path belongs to.
+DOC_SUITE = "docs"
+AUTOMATION_SUITE = "automation"
+PRODUCT_SUITE = "product"
+
+#: Reason reported for a change that touches both scoped suites.
+MIXED_REASON = "docs+automation"
+
+
+def _suite_of(path: str) -> str:
+    """Return which suite one changed ``path`` needs.
+
+    Anything that is neither documentation nor repository automation can affect
+    the product, so it needs the full suite.
+    """
+    if (
+        path in DOC_FILES
+        or path.startswith((*DOC_PREFIXES, ISSUE_FORM_PREFIX))
+        or path.endswith(".md")
+    ):
+        return DOC_SUITE
+    if path.startswith(AUTOMATION_PREFIXES):
+        return AUTOMATION_SUITE
+    return PRODUCT_SUITE
+
+
+def _reason_for(suites: Sequence[str]) -> str:
+    """Return the reason for a change that stays inside the scoped suites."""
+    if DOC_SUITE in suites and AUTOMATION_SUITE in suites:
+        return MIXED_REASON
+    return AUTOMATION_SUITE if AUTOMATION_SUITE in suites else DOC_SUITE
+
+
 def classify(paths: Sequence[str], *, event: str = "push") -> Scope:
     """Classify changed ``paths`` into the suites they require."""
     if event in {"workflow_dispatch", "schedule"}:
@@ -104,27 +137,20 @@ def classify(paths: Sequence[str], *, event: str = "push") -> Scope:
     if not paths:
         return Scope(docs=True, automation=True, full=True, reason="no-diff")
 
-    docs = False
-    automation_scope = False
-    for path in paths:
-        if (
-            path in DOC_FILES
-            or path.startswith((*DOC_PREFIXES, ISSUE_FORM_PREFIX))
-            or path.endswith(".md")
-        ):
-            docs = True
-        elif path.startswith(AUTOMATION_PREFIXES):
-            automation_scope = True
-        else:
-            return Scope(docs=True, automation=True, full=True, reason=f"product:{path}")
+    suites = [_suite_of(path) for path in paths]
+    product = next(
+        (path for path, suite in zip(paths, suites, strict=True) if suite == PRODUCT_SUITE),
+        None,
+    )
+    if product is not None:
+        return Scope(docs=True, automation=True, full=True, reason=f"product:{product}")
 
-    if docs and not automation_scope:
-        reason = "docs"
-    elif automation_scope and not docs:
-        reason = "automation"
-    else:
-        reason = "docs+automation"
-    return Scope(docs=docs, automation=automation_scope, full=False, reason=reason)
+    return Scope(
+        docs=DOC_SUITE in suites,
+        automation=AUTOMATION_SUITE in suites,
+        full=False,
+        reason=_reason_for(suites),
+    )
 
 
 def resolve_scope(*, base: str, head: str, event: str, runner: GitRunner = git_runner) -> Scope:

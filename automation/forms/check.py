@@ -182,19 +182,14 @@ def form_files(root: Path) -> list[Path]:
     return [path for path in template_files(root) if path.name != CONFIG_NAME]
 
 
-def check_template(path: Path, root: Path) -> list[Finding]:
-    """Validate one issue form."""
-    relative = _relative(path, root)
-    text = path.read_text(encoding="utf-8")
+def _is_string_list(value: Any) -> bool:
+    """Whether ``value`` is a list whose items are all strings."""
+    return isinstance(value, list) and all(isinstance(item, str) for item in value)
+
+
+def _check_text_keys(relative: str, text: str, data: dict[str, Any]) -> list[Finding]:
+    """Check the two keys a form cannot do without: ``name`` and ``description``."""
     findings: list[Finding] = []
-
-    try:
-        data = yaml.safe_load(text)
-    except yaml.YAMLError as error:
-        return [Finding(relative, 1, "PSF-FORM-003", f"YAML could not be parsed: {error}")]
-    if not isinstance(data, dict):
-        return [Finding(relative, 1, "PSF-FORM-003", "a template must be a YAML mapping")]
-
     for key in ("name", "description"):
         value = data.get(key)
         if not isinstance(value, str) or not value.strip():
@@ -206,15 +201,18 @@ def check_template(path: Path, root: Path) -> list[Finding]:
                     f"`{key}` must be a non-empty string",
                 )
             )
+    return findings
 
+
+def _check_optional_keys(relative: str, text: str, data: dict[str, Any]) -> list[Finding]:
+    """Check the optional keys, which are still typed when a form declares them."""
+    findings: list[Finding] = []
     if "title" in data and not isinstance(data["title"], str):
         findings.append(
             Finding(relative, key_line(text, "title"), "PSF-FORM-014", "`title` must be a string")
         )
     for key in ("labels", "assignees"):
-        if key in data and not (
-            isinstance(data[key], list) and all(isinstance(item, str) for item in data[key])
-        ):
+        if key in data and not _is_string_list(data[key]):
             findings.append(
                 Finding(
                     relative,
@@ -223,7 +221,36 @@ def check_template(path: Path, root: Path) -> list[Finding]:
                     f"`{key}` must be a list of strings",
                 )
             )
+    return findings
 
+
+def _check_body_elements(relative: str, text: str, body: Sequence[Any]) -> list[Finding]:
+    """Check every element of a form body, carrying the ids seen so far."""
+    lines = sequence_lines(text, "body")
+    seen: set[str] = set()
+    findings: list[Finding] = []
+    for index, element in enumerate(body):
+        line = lines[index] if index < len(lines) else 1
+        findings.extend(_check_element(relative, line, element, seen))
+    return findings
+
+
+def check_template(path: Path, root: Path) -> list[Finding]:
+    """Validate one issue form."""
+    relative = _relative(path, root)
+    text = path.read_text(encoding="utf-8")
+
+    try:
+        data = yaml.safe_load(text)
+    except yaml.YAMLError as error:
+        return [Finding(relative, 1, "PSF-FORM-003", f"YAML could not be parsed: {error}")]
+    if not isinstance(data, dict):
+        return [Finding(relative, 1, "PSF-FORM-003", "a template must be a YAML mapping")]
+
+    findings = [
+        *_check_text_keys(relative, text, data),
+        *_check_optional_keys(relative, text, data),
+    ]
     body = data.get("body")
     if not isinstance(body, list) or not body:
         findings.append(
@@ -232,17 +259,159 @@ def check_template(path: Path, root: Path) -> list[Finding]:
             )
         )
         return findings
+    findings.extend(_check_body_elements(relative, text, body))
+    return findings
 
-    lines = sequence_lines(text, "body")
-    seen: set[str] = set()
-    for index, element in enumerate(body):
-        line = lines[index] if index < len(lines) else 1
-        findings.extend(_check_element(relative, line, element, seen))
+
+def _check_id(
+    relative: str, line: int, kind: Any, element_id: Any, seen: set[str]
+) -> list[Finding]:
+    """Check that an element id is well formed and unique within the form."""
+    if not isinstance(element_id, str) or not ID_RE.match(element_id):
+        return [
+            Finding(
+                relative,
+                line,
+                "PSF-FORM-008",
+                f"a {kind!r} element needs an `id` of letters, digits, `-` or `_`",
+            )
+        ]
+    if element_id in seen:
+        return [Finding(relative, line, "PSF-FORM-008", f"duplicate element id {element_id!r}")]
+    seen.add(element_id)
+    return []
+
+
+def _check_identity(
+    relative: str, line: int, kind: Any, element: dict[str, Any], seen: set[str]
+) -> list[Finding]:
+    """Check the id rules: markdown takes none, the labelled types take a unique one."""
+    findings: list[Finding] = []
+    if kind == "markdown" and "id" in element:
+        findings.append(
+            Finding(
+                relative,
+                line,
+                "PSF-FORM-017",
+                "a 'markdown' element is not submitted, so it must not declare an `id`",
+            )
+        )
+    if kind in ID_TYPES:
+        findings.extend(_check_id(relative, line, kind, element.get("id"), seen))
+    return findings
+
+
+def _check_attributes(
+    relative: str, line: int, kind: Any, attributes: dict[str, Any]
+) -> list[Finding]:
+    """Check the text an element shows: markdown has a value, the rest a label."""
+    if kind == "markdown":
+        value = attributes.get("value")
+        if not isinstance(value, str) or not value.strip():
+            return [
+                Finding(
+                    relative, line, "PSF-FORM-009", "a 'markdown' element needs `attributes.value`"
+                )
+            ]
+        return []
+    if kind in LABELLED_TYPES:
+        label = attributes.get("label")
+        if not isinstance(label, str) or not label.strip():
+            return [
+                Finding(
+                    relative, line, "PSF-FORM-010", f"a {kind!r} element needs `attributes.label`"
+                )
+            ]
+    return []
+
+
+def _check_options(
+    relative: str, line: int, kind: Any, attributes: dict[str, Any]
+) -> list[Finding]:
+    """Check the option lists of a dropdown and of a checkboxes element."""
+    if kind == "dropdown":
+        options = attributes.get("options")
+        if isinstance(options, list) and _valid_options(options):
+            return _check_dropdown(relative, line, attributes, options)
+        return [
+            Finding(
+                relative,
+                line,
+                "PSF-FORM-011",
+                "a 'dropdown' element needs a non-empty `options` list",
+            )
+        ]
+    if kind == "checkboxes" and not _valid_checkboxes(attributes.get("options")):
+        return [
+            Finding(
+                relative,
+                line,
+                "PSF-FORM-012",
+                "a 'checkboxes' element needs `options` entries with a `label` and an optional boolean `required`",
+            )
+        ]
+    return []
+
+
+def _check_min_length(relative: str, line: int, min_length: Any) -> list[Finding]:
+    """Check ``validations.min_length`` when the element declares one."""
+    if min_length is None or (
+        isinstance(min_length, int) and not isinstance(min_length, bool) and min_length >= 0
+    ):
+        return []
+    return [
+        Finding(
+            relative,
+            line,
+            "PSF-FORM-013",
+            "`validations.min_length` must be a non-negative integer",
+        )
+    ]
+
+
+def _check_validation_keys(
+    relative: str, line: int, kind: Any, validations: dict[str, Any]
+) -> list[Finding]:
+    """Check that the element type accepts validations, and only the keys it knows."""
+    if kind not in VALIDATED_TYPES:
+        return [
+            Finding(
+                relative, line, "PSF-FORM-013", f"a {kind!r} element does not accept `validations`"
+            )
+        ]
+    unknown = set(validations) - VALIDATION_KEYS.get(kind, frozenset())
+    if unknown:
+        return [
+            Finding(
+                relative,
+                line,
+                "PSF-FORM-013",
+                f"unknown validation key(s): {', '.join(sorted(unknown))}",
+            )
+        ]
+    return []
+
+
+def _check_validations(relative: str, line: int, kind: Any, validations: Any) -> list[Finding]:
+    """Check the ``validations`` block of an element."""
+    if validations is None:
+        return []
+    if not isinstance(validations, dict):
+        return [Finding(relative, line, "PSF-FORM-013", "`validations` must be a mapping")]
+
+    findings: list[Finding] = []
+    required = validations.get("required")
+    if required is not None and not isinstance(required, bool):
+        findings.append(
+            Finding(relative, line, "PSF-FORM-013", "`validations.required` must be a boolean")
+        )
+    findings.extend(_check_min_length(relative, line, validations.get("min_length")))
+    findings.extend(_check_validation_keys(relative, line, kind, validations))
     return findings
 
 
 def _check_element(relative: str, line: int, element: Any, seen: set[str]) -> list[Finding]:
-    findings: list[Finding] = []
+    """Check one body element: its type, its id, its text, its options, its validations."""
     if not isinstance(element, dict):
         return [Finding(relative, line, "PSF-FORM-006", "each body element must be a mapping")]
 
@@ -257,6 +426,7 @@ def _check_element(relative: str, line: int, element: Any, seen: set[str]) -> li
             )
         ]
 
+    findings: list[Finding] = []
     attributes = element.get("attributes")
     if attributes is not None and not isinstance(attributes, dict):
         findings.append(
@@ -268,121 +438,12 @@ def _check_element(relative: str, line: int, element: Any, seen: set[str]) -> li
             )
         )
         attributes = {}
-
-    if kind == "markdown" and "id" in element:
-        findings.append(
-            Finding(
-                relative,
-                line,
-                "PSF-FORM-017",
-                "a 'markdown' element is not submitted, so it must not declare an `id`",
-            )
-        )
-
-    if kind in ID_TYPES:
-        element_id = element.get("id")
-        if not isinstance(element_id, str) or not ID_RE.match(element_id):
-            findings.append(
-                Finding(
-                    relative,
-                    line,
-                    "PSF-FORM-008",
-                    f"a {kind!r} element needs an `id` of letters, digits, `-` or `_`",
-                )
-            )
-        elif element_id in seen:
-            findings.append(
-                Finding(relative, line, "PSF-FORM-008", f"duplicate element id {element_id!r}")
-            )
-        else:
-            seen.add(element_id)
-
     attributes = attributes or {}
-    if kind == "markdown":
-        value = attributes.get("value")
-        if not isinstance(value, str) or not value.strip():
-            findings.append(
-                Finding(
-                    relative, line, "PSF-FORM-009", "a 'markdown' element needs `attributes.value`"
-                )
-            )
-    elif kind in LABELLED_TYPES:
-        label = attributes.get("label")
-        if not isinstance(label, str) or not label.strip():
-            findings.append(
-                Finding(
-                    relative, line, "PSF-FORM-010", f"a {kind!r} element needs `attributes.label`"
-                )
-            )
 
-    if kind == "dropdown":
-        options = attributes.get("options")
-        if isinstance(options, list) and _valid_options(options):
-            findings.extend(_check_dropdown(relative, line, attributes, options))
-        else:
-            findings.append(
-                Finding(
-                    relative,
-                    line,
-                    "PSF-FORM-011",
-                    "a 'dropdown' element needs a non-empty `options` list",
-                )
-            )
-    if kind == "checkboxes" and not _valid_checkboxes(attributes.get("options")):
-        findings.append(
-            Finding(
-                relative,
-                line,
-                "PSF-FORM-012",
-                "a 'checkboxes' element needs `options` entries with a `label` and an optional boolean `required`",
-            )
-        )
-
-    validations = element.get("validations")
-    if validations is not None:
-        if not isinstance(validations, dict):
-            findings.append(
-                Finding(relative, line, "PSF-FORM-013", "`validations` must be a mapping")
-            )
-        else:
-            required = validations.get("required")
-            if required is not None and not isinstance(required, bool):
-                findings.append(
-                    Finding(
-                        relative, line, "PSF-FORM-013", "`validations.required` must be a boolean"
-                    )
-                )
-            min_length = validations.get("min_length")
-            if min_length is not None and (
-                not isinstance(min_length, int) or isinstance(min_length, bool) or min_length < 0
-            ):
-                findings.append(
-                    Finding(
-                        relative,
-                        line,
-                        "PSF-FORM-013",
-                        "`validations.min_length` must be a non-negative integer",
-                    )
-                )
-            unknown = set(validations) - VALIDATION_KEYS.get(kind, frozenset())
-            if kind not in VALIDATED_TYPES:
-                findings.append(
-                    Finding(
-                        relative,
-                        line,
-                        "PSF-FORM-013",
-                        f"a {kind!r} element does not accept `validations`",
-                    )
-                )
-            elif unknown:
-                findings.append(
-                    Finding(
-                        relative,
-                        line,
-                        "PSF-FORM-013",
-                        f"unknown validation key(s): {', '.join(sorted(unknown))}",
-                    )
-                )
+    findings.extend(_check_identity(relative, line, kind, element, seen))
+    findings.extend(_check_attributes(relative, line, kind, attributes))
+    findings.extend(_check_options(relative, line, kind, attributes))
+    findings.extend(_check_validations(relative, line, kind, element.get("validations")))
     return findings
 
 
@@ -448,6 +509,60 @@ def _valid_checkboxes(options: Any) -> bool:
     return True
 
 
+def _check_blank_issues(relative: str, text: str, data: dict[str, Any]) -> list[Finding]:
+    """Check ``blank_issues_enabled``, which is optional and boolean."""
+    blank = data.get("blank_issues_enabled")
+    if blank is not None and not isinstance(blank, bool):
+        return [
+            Finding(
+                relative,
+                key_line(text, "blank_issues_enabled"),
+                "PSF-FORM-015",
+                "`blank_issues_enabled` must be a boolean",
+            )
+        ]
+    return []
+
+
+def _check_contact_link(relative: str, line: int, link: Any) -> list[Finding]:
+    """Check one contact link: its mapping, its three fields and its absolute url."""
+    if not isinstance(link, dict):
+        return [Finding(relative, line, "PSF-FORM-015", "each contact link must be a mapping")]
+    findings = [
+        Finding(relative, line, "PSF-FORM-015", f"the contact link is missing `{field}`")
+        for field in ("name", "url", "about")
+        if not isinstance(link.get(field), str) or not str(link.get(field)).strip()
+    ]
+    url = link.get("url")
+    if isinstance(url, str) and not url.startswith(("https://", "http://")):
+        findings.append(
+            Finding(relative, line, "PSF-FORM-015", f"contact link url must be absolute: {url!r}")
+        )
+    return findings
+
+
+def _check_contact_links(relative: str, text: str, data: dict[str, Any]) -> list[Finding]:
+    """Check the ``contact_links`` list, link by link."""
+    links = data.get("contact_links")
+    if links is None:
+        return []
+    if not isinstance(links, list):
+        return [
+            Finding(
+                relative,
+                key_line(text, "contact_links"),
+                "PSF-FORM-015",
+                "`contact_links` must be a list",
+            )
+        ]
+    lines = sequence_lines(text, "contact_links")
+    findings: list[Finding] = []
+    for index, link in enumerate(links):
+        line = lines[index] if index < len(lines) else 1
+        findings.extend(_check_contact_link(relative, line, link))
+    return findings
+
+
 def check_config(path: Path, root: Path) -> list[Finding]:
     """Validate ``config.yml``."""
     relative = _relative(path, root)
@@ -459,61 +574,7 @@ def check_config(path: Path, root: Path) -> list[Finding]:
     if not isinstance(data, dict):
         return [Finding(relative, 1, "PSF-FORM-003", "config.yml must be a YAML mapping")]
 
-    findings: list[Finding] = []
-    blank = data.get("blank_issues_enabled")
-    if blank is not None and not isinstance(blank, bool):
-        findings.append(
-            Finding(
-                relative,
-                key_line(text, "blank_issues_enabled"),
-                "PSF-FORM-015",
-                "`blank_issues_enabled` must be a boolean",
-            )
-        )
-
-    links = data.get("contact_links")
-    if links is not None:
-        if not isinstance(links, list):
-            findings.append(
-                Finding(
-                    relative,
-                    key_line(text, "contact_links"),
-                    "PSF-FORM-015",
-                    "`contact_links` must be a list",
-                )
-            )
-        else:
-            lines = sequence_lines(text, "contact_links")
-            for index, link in enumerate(links):
-                line = lines[index] if index < len(lines) else 1
-                if not isinstance(link, dict):
-                    findings.append(
-                        Finding(
-                            relative, line, "PSF-FORM-015", "each contact link must be a mapping"
-                        )
-                    )
-                    continue
-                for field in ("name", "url", "about"):
-                    if not isinstance(link.get(field), str) or not str(link.get(field)).strip():
-                        findings.append(
-                            Finding(
-                                relative,
-                                line,
-                                "PSF-FORM-015",
-                                f"the contact link is missing `{field}`",
-                            )
-                        )
-                url = link.get("url")
-                if isinstance(url, str) and not url.startswith(("https://", "http://")):
-                    findings.append(
-                        Finding(
-                            relative,
-                            line,
-                            "PSF-FORM-015",
-                            f"contact link url must be absolute: {url!r}",
-                        )
-                    )
-    return findings
+    return [*_check_blank_issues(relative, text, data), *_check_contact_links(relative, text, data)]
 
 
 def check_forms(root: Path = REPO_ROOT) -> list[Finding]:

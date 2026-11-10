@@ -268,44 +268,68 @@ def install_hooks(root: Path, pixi: str, *, runner: Runner = subprocess_runner) 
         raise RuntimeError(msg) from error
 
 
+@dataclass(frozen=True)
+class Tooling:
+    """Everything ``restore`` reaches outside the repository for.
+
+    The collaborators are injected rather than imported so the tests drive the
+    orchestration without network access, without Pixi and without touching
+    ``$HOME``. The defaults are the real ones.
+    """
+
+    runner: Runner = subprocess_runner
+    fetcher: Fetcher = url_fetcher
+    finder: Callable[[str], str | None] = shutil.which
+    git: Callable[..., str] = git_runner
+    installer: Callable[..., str | None] = install_pixi
+    pixi_home: Path = PIXI_HOME
+    version: str = PIXI_VERSION
+
+
 def restore(
     root: Path = REPO_ROOT,
     *,
-    runner: Runner = subprocess_runner,
-    fetcher: Fetcher = url_fetcher,
-    finder: Callable[[str], str | None] = shutil.which,
-    git_runner_: Callable[..., str] = git_runner,
-    installer: Callable[..., str | None] = install_pixi,
-    pixi_home: Path = PIXI_HOME,
-    version: str = PIXI_VERSION,
+    tooling: Tooling | None = None,
     relock: bool = False,
     hooks: bool = True,
 ) -> State:
     """Bring the repository to a ready state and return what is true afterwards.
 
+    Args:
+        root: the repository to restore.
+        tooling: the collaborators to drive; the real ones by default.
+        relock: run ``pixi lock`` before installing.
+        hooks: install the Lefthook hooks when the directory is a git checkout.
+
     Raises:
         RuntimeError: if Pixi cannot be installed or the environment cannot be solved.
     """
-    pixi = which_pixi(finder=finder, pixi_home=pixi_home)
+    tools = tooling or Tooling()
+    pixi = which_pixi(finder=tools.finder, pixi_home=tools.pixi_home)
     if pixi is None:
-        pixi = installer(fetcher=fetcher, runner=runner, version=version, pixi_home=pixi_home)
+        pixi = tools.installer(
+            fetcher=tools.fetcher,
+            runner=tools.runner,
+            version=tools.version,
+            pixi_home=tools.pixi_home,
+        )
         if pixi is None:  # pragma: no cover - install_pixi raises instead
             msg = "Pixi could not be installed"
             raise RuntimeError(msg)
 
-    status = install_environment(root, pixi, runner=runner, relock=relock)
+    status = install_environment(root, pixi, runner=tools.runner, relock=relock)
     if status != 0:
         msg = f"`pixi install` exited with status {status}; run with --relock to solve again"
         raise RuntimeError(msg)
 
-    git = is_git_repository(root, runner=git_runner_)
+    git = is_git_repository(root, runner=tools.git)
     if hooks and git:
-        status = install_hooks(root, pixi, runner=runner)
+        status = install_hooks(root, pixi, runner=tools.runner)
         if status != 0:
             msg = f"`pixi run install-hooks` exited with status {status}"
             raise RuntimeError(msg)
 
-    return inspect(root, finder=lambda _name: pixi, runner=git_runner_, pixi_home=pixi_home)
+    return inspect(root, finder=lambda _name: pixi, runner=tools.git, pixi_home=tools.pixi_home)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -334,7 +358,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     try:
         state = restore(
-            args.root, version=args.version, relock=args.relock, hooks=not args.skip_hooks
+            args.root,
+            tooling=Tooling(version=args.version),
+            relock=args.relock,
+            hooks=not args.skip_hooks,
         )
     except RuntimeError as error:
         print(f"restore: {error}")

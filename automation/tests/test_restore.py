@@ -234,10 +234,12 @@ def test_restore_installs_pixi_environment_and_hooks(tmp_path: Path) -> None:
 
     state = generate.restore(
         tmp_path,
-        runner=recorder.run,
-        fetcher=lambda url: b"#!/bin/sh\n",
-        finder=found_pixi,
-        git_runner_=fake_git(".git"),
+        tooling=generate.Tooling(
+            runner=recorder.run,
+            fetcher=lambda url: b"#!/bin/sh\n",
+            finder=found_pixi,
+            git=fake_git(".git"),
+        ),
         hooks=True,
     )
 
@@ -254,10 +256,12 @@ def test_restore_relocks_first(tmp_path: Path) -> None:
 
     generate.restore(
         tmp_path,
-        runner=recorder.run,
-        fetcher=lambda url: b"",
-        finder=found_pixi,
-        git_runner_=fake_git(""),
+        tooling=generate.Tooling(
+            runner=recorder.run,
+            fetcher=lambda url: b"",
+            finder=found_pixi,
+            git=fake_git(""),
+        ),
         relock=True,
         hooks=False,
     )
@@ -272,10 +276,12 @@ def test_restore_skips_hooks_without_git(tmp_path: Path) -> None:
 
     generate.restore(
         tmp_path,
-        runner=recorder.run,
-        fetcher=lambda url: b"",
-        finder=found_pixi,
-        git_runner_=fake_git(""),
+        tooling=generate.Tooling(
+            runner=recorder.run,
+            fetcher=lambda url: b"",
+            finder=found_pixi,
+            git=fake_git(""),
+        ),
     )
 
     assert recorder.commands() == [("/usr/local/bin/pixi", "install", "--locked")]
@@ -287,10 +293,12 @@ def test_restore_skips_hooks_when_asked(tmp_path: Path) -> None:
 
     generate.restore(
         tmp_path,
-        runner=recorder.run,
-        fetcher=lambda url: b"",
-        finder=found_pixi,
-        git_runner_=fake_git(".git"),
+        tooling=generate.Tooling(
+            runner=recorder.run,
+            fetcher=lambda url: b"",
+            finder=found_pixi,
+            git=fake_git(".git"),
+        ),
         hooks=False,
     )
 
@@ -304,10 +312,12 @@ def test_restore_raises_when_the_environment_cannot_be_solved(tmp_path: Path) ->
     with pytest.raises(RuntimeError, match="pixi install"):
         generate.restore(
             tmp_path,
-            runner=runner,
-            fetcher=lambda url: b"",
-            finder=found_pixi,
-            git_runner_=fake_git(""),
+            tooling=generate.Tooling(
+                runner=runner,
+                fetcher=lambda url: b"",
+                finder=found_pixi,
+                git=fake_git(""),
+            ),
         )
 
 
@@ -322,10 +332,12 @@ def test_restore_raises_when_hooks_fail(tmp_path: Path) -> None:
     with pytest.raises(RuntimeError, match="install-hooks"):
         generate.restore(
             tmp_path,
-            runner=runner,
-            fetcher=lambda url: b"",
-            finder=found_pixi,
-            git_runner_=fake_git(".git"),
+            tooling=generate.Tooling(
+                runner=runner,
+                fetcher=lambda url: b"",
+                finder=found_pixi,
+                git=fake_git(".git"),
+            ),
         )
     assert ("/usr/local/bin/pixi", "run", "--locked", "install-hooks") in calls
 
@@ -393,6 +405,8 @@ def test_main_passes_the_version_through(tmp_path: Path, monkeypatch: pytest.Mon
 
     monkeypatch.setattr(generate, "restore", fake_restore)
     generate.main(["--root", str(tmp_path), "--version", "9.9.9", "--relock", "--skip-hooks"])
-    assert seen["version"] == "9.9.9"
+    tooling = seen["tooling"]
+    assert isinstance(tooling, generate.Tooling)
+    assert tooling.version == "9.9.9"
     assert seen["relock"] is True
     assert seen["hooks"] is False

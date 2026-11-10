@@ -54,8 +54,10 @@ each task's docstring.
 | `pixi run automation test-matrix` | `tox -c packages/pyshellforge/tox.ini`: every installed interpreter, isolated virtualenvs |
 | `pixi run automation coverage-merge` | Merge per-interpreter coverage and enforce the gate |
 | `pixi run automation lint` / `format` / `format-check` | ruff |
+| `pixi run automation lint-clean-code` | `python -m automation.clean_code` (rude Clean Code rules) |
 | `pixi run automation typecheck` | `mypy --config-file packages/pyshellforge/pyproject.toml` (strict) |
-| `pixi run automation check-docs` | `python -m automation.docs` |
+| `pixi run automation check-docs` | `python -m automation.clean_code` | Enforce Clean Code rules on both package source trees, automation, and dodo.py |
+| `python -m automation.docs` |
 | `pixi run automation readme` / `readme-check` | Regenerate / verify `README.md` and `packages/pyshellforge/README.md`, banner included |
 | `pixi run automation banner` | Draw text as FIGlet art (`automation.banner`); `--comment` prefixes each row for a script header |
 | `pixi run automation agents` / `agents-check` | Regenerate the marked AGENTS.md sections / verify the marker contract |
@@ -68,7 +70,7 @@ each task's docstring.
 | `pixi run automation lint-commit` | convco (conventional commits), read from stdin |
 | `pixi run automation build` / `check-packages` | `python -m build --outdir dist pyshellforge`, `twine check` |
 | `pixi run automation check-release` / `release-build` | The tag/version guard alone / the full release build |
-| `pixi run automation check` | The aggregate gate as a dependency graph: lint, format, types, docs, Gherkin, forms, README, AGENTS.md, alint, actionlint, markdownlint, prose, links, release guard |
+| `pixi run automation check` | The aggregate gate as a dependency graph: lint, format, types, Clean Code, docs, Gherkin, forms, README, AGENTS.md, alint, actionlint, markdownlint, prose, links, release guard |
 | `pixi run automation -n 4 check` | The same graph, four tasks at a time |
 | `pixi run automation detect-changes --base SHA --head SHA` | Classify changed files for CI |
 
@@ -114,6 +116,7 @@ Gherkin scenarios stay Python:
 | Tool | Owns | Config |
 | --- | --- | --- |
 | ruff | Python lint and formatting | `ruff.toml` |
+| rude + rude-clean-code | Clean Code structure and complexity | `packages/pyshellforge/pyproject.toml` |
 | mypy | Types, strict | `packages/pyshellforge/pyproject.toml` |
 | coverage.py | Coverage threshold | `.coveragerc` |
 | alint | Repository structure and conventions | `.alint.yml` |
@@ -125,9 +128,18 @@ Gherkin scenarios stay Python:
 | automation.docs | Documentation structure and internal links | in-repo |
 | automation.forms | GitHub Issue Forms schema | in-repo |
 
+The Clean Code gate selects only the nine `CC` rules; ruff handles general
+Python linting. It checks both `packages/*/src` trees, all of `automation/`, and
+`dodo.py`. Function length (CC101) is limited to 60 lines because the rule
+counts signatures and docstrings; every other rule uses the plugin default.
+The wrapper passes the configuration explicitly and fails on warnings, which the
+underlying `rude check` command alone does not. Use
+`python -m automation.clean_code --json` for machine-readable findings or pass
+paths to check a subset.
+
 ## Git hooks
 
-`lefthook.yml` runs the fast checks on commit (lint, format, types, Gherkin,
+`lefthook.yml` runs the fast checks on commit (lint, format, types, Clean Code, Gherkin,
 documentation, README freshness, alint, actionlint), validates the commit message,
 and runs the suites before push. Hooks call `pixi run --locked automation <task>`,
 so a stale environment is detected immediately and the hook runs exactly what

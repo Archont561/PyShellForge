@@ -57,11 +57,13 @@ def _restore(context: dict[str, Any], *, finder: Finder, fail_install: bool = Fa
     try:
         context["state"] = generate.restore(
             root,
-            runner=recorder.run,
-            fetcher=lambda url: b"#!/bin/sh\n",
-            finder=finder,
-            git_runner_=_git(str(context.get("git_dir", ""))),
-            installer=installer,
+            tooling=generate.Tooling(
+                runner=recorder.run,
+                fetcher=lambda url: b"#!/bin/sh\n",
+                finder=finder,
+                git=_git(str(context.get("git_dir", ""))),
+                installer=installer,
+            ),
         )
     except RuntimeError as error:
         context["error"] = str(error)

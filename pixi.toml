@@ -51,6 +51,9 @@ doit = ">=0.36,<1"
 alint = ">=0.20,<1"
 # FIGlet art for the README banner (automation.banner reads it at generation time).
 pyfiglet = ">=1.0.4,<2"
+# Clean Code rule plugin and its linter.
+rude = ">=0.1a4,<0.2"
+rude-clean-code = ">=0.1,<0.2"
 
 [tasks]
 # The entry points. Everything else is a doit task: `pixi run automation list`.

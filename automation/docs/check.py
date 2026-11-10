@@ -206,36 +206,33 @@ def _check_navigation(root: Path, docs: Path, pages: Iterable[Path]) -> list[Fin
     return findings
 
 
-def _check_page(
-    root: Path, page: Path, docs: Path, anchor_cache: dict[Path, set[str]]
-) -> list[Finding]:
+def _split_fences(relative: str, text: str) -> tuple[list[Finding], list[tuple[int, str]]]:
+    """Return the fenced-block findings and the lines that sit outside a fence."""
     findings: list[Finding] = []
-    text = page.read_text(encoding="utf-8")
-    relative = _relative(page, root)
-
-    def anchors_for(target: Path) -> set[str]:
-        if target not in anchor_cache:
-            content = target.read_text(encoding="utf-8") if target.is_file() else ""
-            anchor_cache[target] = {github_anchor(item[2]) for item in headings(content)}
-        return anchor_cache[target]
-
-    h1 = 0
-    previous_level = 0
+    outside: list[tuple[int, str]] = []
     in_fence = False
     fence_line = 0
-
     for number, line in enumerate(text.splitlines(), start=1):
-        if FENCE.match(line):
-            if not in_fence and not FENCE.match(line).group("info"):  # type: ignore[union-attr]
+        fence = FENCE.match(line)
+        if fence is not None:
+            if not in_fence and not fence.group("info"):
                 findings.append(
                     Finding(relative, number, "PSF-DOC-006", "fenced block declares no language")
                 )
             in_fence = not in_fence
             fence_line = number
             continue
-        if in_fence:
-            continue
+        if not in_fence:
+            outside.append((number, line))
+    if in_fence:
+        findings.append(Finding(relative, fence_line, "PSF-DOC-009", "unclosed fenced block"))
+    return findings, outside
 
+
+def _check_lines(relative: str, outside: Iterable[tuple[int, str]]) -> list[Finding]:
+    """Check the prose lines: template artefacts, trailing whitespace and tabs."""
+    findings: list[Finding] = []
+    for number, line in outside:
         if TEMPLATE_ARTIFACT.search(line):
             findings.append(
                 Finding(relative, number, "PSF-DOC-014", "unrendered template artifact")
@@ -244,29 +241,46 @@ def _check_page(
             findings.append(Finding(relative, number, "PSF-DOC-007", "trailing whitespace"))
         if "\t" in line:
             findings.append(Finding(relative, number, "PSF-DOC-008", "tab character"))
+    return findings
 
+
+def _check_headings(relative: str, outside: Iterable[tuple[int, str]]) -> tuple[list[Finding], int]:
+    """Check that headings step down one level at a time; return the h1 count too."""
+    findings: list[Finding] = []
+    h1 = 0
+    previous_level = 0
+    for number, line in outside:
         heading_match = HEADING.match(line)
-        if heading_match:
-            level = len(heading_match.group("marks"))
-            h1 += level == 1
-            if previous_level and level > previous_level + 1:
-                findings.append(
-                    Finding(
-                        relative,
-                        number,
-                        "PSF-DOC-010",
-                        f"heading jumps from h{previous_level} to h{level}",
-                    )
+        if heading_match is None:
+            continue
+        level = len(heading_match.group("marks"))
+        h1 += level == 1
+        if previous_level and level > previous_level + 1:
+            findings.append(
+                Finding(
+                    relative,
+                    number,
+                    "PSF-DOC-010",
+                    f"heading jumps from h{previous_level} to h{level}",
                 )
-            previous_level = level
+            )
+        previous_level = level
+    return findings, h1
 
-    if in_fence:
-        findings.append(Finding(relative, fence_line, "PSF-DOC-009", "unclosed fenced block"))
-    if h1 == 0:
-        findings.append(Finding(relative, 1, "PSF-DOC-011", "page has no level-1 heading"))
-    elif h1 > 1:
-        findings.append(Finding(relative, 1, "PSF-DOC-012", f"{h1} level-1 headings"))
 
+def _anchors_for(target: Path, cache: dict[Path, set[str]]) -> set[str]:
+    """Return the anchors of ``target``, read once per documentation run."""
+    if target not in cache:
+        content = target.read_text(encoding="utf-8") if target.is_file() else ""
+        cache[target] = {github_anchor(item[2]) for item in headings(content)}
+    return cache[target]
+
+
+def _check_links(
+    page: Path, relative: str, text: str, anchor_cache: dict[Path, set[str]]
+) -> list[Finding]:
+    """Check that every local link target exists, fragment included."""
+    findings: list[Finding] = []
     for number, target in _link_targets(text):
         if not _is_local(target):
             continue
@@ -274,23 +288,32 @@ def _check_page(
         destination = (page.parent / location).resolve() if location else page.resolve()
         if not destination.exists():
             findings.append(
-                Finding(
-                    relative,
-                    number,
-                    "PSF-DOC-004",
-                    f"missing link target: {target}",
-                )
+                Finding(relative, number, "PSF-DOC-004", f"missing link target: {target}")
             )
             continue
-        if fragment and destination.suffix == ".md" and fragment not in anchors_for(destination):
+        if (
+            fragment
+            and destination.suffix == ".md"
+            and fragment not in _anchors_for(destination, anchor_cache)
+        ):
             findings.append(
-                Finding(
-                    relative,
-                    number,
-                    "PSF-DOC-005",
-                    f"missing anchor '{fragment}' in {target}",
-                )
+                Finding(relative, number, "PSF-DOC-005", f"missing anchor '{fragment}' in {target}")
             )
+    return findings
+
+
+def _check_page(root: Path, page: Path, anchor_cache: dict[Path, set[str]]) -> list[Finding]:
+    """Check one documentation page: its fences, its prose, its headings and its links."""
+    text = page.read_text(encoding="utf-8")
+    relative = _relative(page, root)
+    fence_findings, outside = _split_fences(relative, text)
+    heading_findings, h1 = _check_headings(relative, outside)
+    findings = [*fence_findings, *_check_lines(relative, outside), *heading_findings]
+    if h1 == 0:
+        findings.append(Finding(relative, 1, "PSF-DOC-011", "page has no level-1 heading"))
+    elif h1 > 1:
+        findings.append(Finding(relative, 1, "PSF-DOC-012", f"{h1} level-1 headings"))
+    findings.extend(_check_links(page, relative, text, anchor_cache))
     return findings
 
 
@@ -310,7 +333,7 @@ def check_docs(root: Path = REPO_ROOT, docs_dir: Path | None = None) -> list[Fin
     findings.extend(_check_navigation(root, docs, pages))
     cache: dict[Path, set[str]] = {}
     for page in pages:
-        findings.extend(_check_page(root, page, docs, cache))
+        findings.extend(_check_page(root, page, cache))
     return sorted(set(findings))
 
 

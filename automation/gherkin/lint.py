@@ -122,13 +122,22 @@ class StepDefinition:
         return re.fullmatch(regex, text) is not None
 
 
+def _is_noise(line: str) -> bool:
+    """Whether a stripped line carries nothing the linter reads.
+
+    Tag lines are not noise: they are collected, so ``@`` stays out of the
+    prefixes below.
+    """
+    return not line or line.startswith("#") or line.startswith(("Examples:", "|", "Rule:"))
+
+
 def parse_feature(path: Path) -> Feature:
     """Parse a ``.feature`` file into a :class:`Feature`."""
     feature = Feature(path=path, line=0, name="")
     current: Scenario | None = None
     for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = raw.strip()
-        if not line or line.startswith("#"):
+        if _is_noise(line):
             continue
         if match := FEATURE.match(line):
             if not feature.name:
@@ -146,8 +155,6 @@ def parse_feature(path: Path) -> Feature:
             continue
         if tag_match := TAG.match(line):
             feature.tags.update(tag.lstrip("@") for tag in tag_match.group(1).split())
-            continue
-        if line.startswith(("Examples:", "|", "@", "Rule:")):
             continue
         if (match := STEP.match(line)) and current is not None:
             current.steps.append((number, match.group("keyword"), match.group("text")))
@@ -207,6 +214,107 @@ def _as_dirs(value: Path | Sequence[Path] | None, default: tuple[Path, ...]) -> 
     return (value,) if isinstance(value, Path) else tuple(value)
 
 
+def _matching(definitions: Sequence[StepDefinition], text: str) -> list[int]:
+    """Return the index of every definition that binds ``text``."""
+    return [index for index, definition in enumerate(definitions) if definition.matches(text)]
+
+
+def _check_steps(
+    relative: str,
+    steps: Sequence[tuple[int, str, str]],
+    definitions: Sequence[StepDefinition],
+    used: set[int],
+) -> list[Finding]:
+    """Report steps with no definition and record the ones that have one."""
+    findings: list[Finding] = []
+    for number, _, text in steps:
+        matching = _matching(definitions, text)
+        if not matching:
+            findings.append(Finding(relative, number, "PSF-FEAT-006", f"undefined step: {text}"))
+        used.update(matching)
+    return findings
+
+
+def _check_tags(relative: str, feature: Feature, allowed_tags: frozenset[str]) -> list[Finding]:
+    """Report every tag the configuration does not allow."""
+    return [
+        Finding(relative, feature.line, "PSF-FEAT-008", f"unknown tag {tag}")
+        for tag in sorted(feature.tags - allowed_tags)
+    ]
+
+
+def _check_scenarios(
+    relative: str,
+    scenarios: Sequence[Scenario],
+    definitions: Sequence[StepDefinition],
+    used: set[int],
+) -> list[Finding]:
+    """Check the scenario names, their steps and their keyword order."""
+    findings: list[Finding] = []
+    names: set[str] = set()
+    for scenario in scenarios:
+        if scenario.name in names:
+            findings.append(
+                Finding(
+                    relative,
+                    scenario.line,
+                    "PSF-FEAT-004",
+                    f"duplicate scenario name '{scenario.name}'",
+                )
+            )
+        names.add(scenario.name)
+        if not scenario.steps:
+            findings.append(
+                Finding(
+                    relative,
+                    scenario.line,
+                    "PSF-FEAT-003",
+                    f"scenario '{scenario.name}' has no steps",
+                )
+            )
+        findings.extend(_check_order(scenario, relative))
+        findings.extend(_check_steps(relative, scenario.steps, definitions, used))
+    return findings
+
+
+def _check_feature(
+    path: Path,
+    relative: str,
+    definitions: Sequence[StepDefinition],
+    allowed_tags: frozenset[str] | None,
+    used: set[int],
+) -> list[Finding]:
+    """Check one ``.feature`` file and record which definitions it exercises."""
+    feature = parse_feature(path)
+    if not feature.name:
+        return [Finding(relative, 1, "PSF-FEAT-001", "no Feature: statement")]
+
+    findings: list[Finding] = []
+    if not feature.scenarios:
+        findings.append(Finding(relative, feature.line, "PSF-FEAT-002", "no scenarios"))
+    if allowed_tags is not None:
+        findings.extend(_check_tags(relative, feature, allowed_tags))
+    if feature.background is not None:
+        findings.extend(_check_order(feature.background, relative))
+        findings.extend(_check_steps(relative, feature.background.steps, definitions, used))
+    findings.extend(_check_scenarios(relative, feature.scenarios, definitions, used))
+    return findings
+
+
+def _unused_definitions(definitions: Sequence[StepDefinition], used: set[int]) -> list[Finding]:
+    """Report every definition no scenario binds."""
+    return [
+        Finding(
+            definition.path,
+            definition.line,
+            "PSF-FEAT-007",
+            f"unused step definition: {definition.text}",
+        )
+        for index, definition in enumerate(definitions)
+        if index not in used
+    ]
+
+
 def lint_features(
     features_dirs: Path | Sequence[Path] | None = None,
     steps_dirs: Path | Sequence[Path] | None = None,
@@ -224,79 +332,10 @@ def lint_features(
     ]
     findings: list[Finding] = []
     used: set[int] = set()
-    paths = [path for directory in features_dirs for path in discover_features(directory)]
-
-    for path in paths:
+    for path in (path for directory in features_dirs for path in discover_features(directory)):
         relative = str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
-        feature = parse_feature(path)
-        if not feature.name:
-            findings.append(Finding(relative, 1, "PSF-FEAT-001", "no Feature: statement"))
-            continue
-        if not feature.scenarios:
-            findings.append(Finding(relative, feature.line, "PSF-FEAT-002", "no scenarios"))
-        if allowed_tags is not None:
-            for tag in sorted(feature.tags - allowed_tags):
-                findings.append(
-                    Finding(relative, feature.line, "PSF-FEAT-008", f"unknown tag {tag}")
-                )
-
-        background_steps = feature.background.steps if feature.background else []
-        if feature.background is not None:
-            findings.extend(_check_order(feature.background, relative))
-        for number, _, text in background_steps:
-            matching = [
-                index for index, definition in enumerate(definitions) if definition.matches(text)
-            ]
-            if not matching:
-                findings.append(
-                    Finding(relative, number, "PSF-FEAT-006", f"undefined step: {text}")
-                )
-            used.update(matching)
-
-        names: set[str] = set()
-        for scenario in feature.scenarios:
-            if scenario.name in names:
-                findings.append(
-                    Finding(
-                        relative,
-                        scenario.line,
-                        "PSF-FEAT-004",
-                        f"duplicate scenario name '{scenario.name}'",
-                    )
-                )
-            names.add(scenario.name)
-            if not scenario.steps:
-                findings.append(
-                    Finding(
-                        relative,
-                        scenario.line,
-                        "PSF-FEAT-003",
-                        f"scenario '{scenario.name}' has no steps",
-                    )
-                )
-            findings.extend(_check_order(scenario, relative))
-            for number, _, text in scenario.steps:
-                matching = [
-                    index
-                    for index, definition in enumerate(definitions)
-                    if definition.matches(text)
-                ]
-                if not matching:
-                    findings.append(
-                        Finding(relative, number, "PSF-FEAT-006", f"undefined step: {text}")
-                    )
-                used.update(matching)
-
-    for index, definition in enumerate(definitions):
-        if index not in used:
-            findings.append(
-                Finding(
-                    definition.path,
-                    definition.line,
-                    "PSF-FEAT-007",
-                    f"unused step definition: {definition.text}",
-                )
-            )
+        findings.extend(_check_feature(path, relative, definitions, allowed_tags, used))
+    findings.extend(_unused_definitions(definitions, used))
     return sorted(set(findings))
 
 
@@ -307,8 +346,8 @@ def load_config(path: Path = REPO_ROOT / "gherlint.toml") -> dict[str, object]:
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    """CLI entry point."""
+def _build_parser() -> argparse.ArgumentParser:
+    """Return the argument parser behind ``python -m automation.gherkin``."""
     parser = argparse.ArgumentParser(
         prog="python -m automation.gherkin",
         description="Lint Gherkin features and verify step definitions.",
@@ -329,9 +368,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument("--config", type=Path, default=REPO_ROOT / "gherlint.toml")
     parser.add_argument("--json", action="store_true", help="emit JSON findings")
-    args = parser.parse_args(argv)
+    return parser
 
-    config = load_config(args.config)
+
+def _policy(config: dict[str, object]) -> tuple[frozenset[str] | None, set[str]]:
+    """Return the allowed tags and the disabled codes from ``gherlint.toml``.
+
+    ``None`` for the tags means the file does not restrict them, which is what a
+    repository without a ``[tags]`` table gets.
+    """
     tags_section = config.get("tags")
     allowed = (
         frozenset(str(tag) for tag in tags_section["allowed"])
@@ -344,25 +389,35 @@ def main(argv: Sequence[str] | None = None) -> int:
         if isinstance(reporting, dict) and isinstance(reporting.get("disable"), list)
         else set()
     )
+    return allowed, disabled
 
+
+def _print_findings(findings: Sequence[Finding], files: int, *, as_json: bool) -> None:
+    """Print the findings in the requested format and the summary line."""
+    if as_json:
+        print(json.dumps([finding.to_dict() for finding in findings], indent=2))
+        return
+    for finding in findings:
+        print(finding.format())
+    status = "ok" if not findings else f"{len(findings)} finding(s)"
+    print(f"features: {files} file(s), {status}")
+    if findings:
+        print(
+            f"codes: {', '.join(sorted({finding.code for finding in findings}))}", file=sys.stderr
+        )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """CLI entry point."""
+    args = _build_parser().parse_args(argv)
+    allowed, disabled = _policy(load_config(args.config))
     findings = [
         finding
         for finding in lint_features(args.features, args.steps, allowed_tags=allowed)
         if finding.code not in disabled
     ]
-    if args.json:
-        print(json.dumps([finding.to_dict() for finding in findings], indent=2))
-    else:
-        for finding in findings:
-            print(finding.format())
-        files = sum(len(discover_features(directory)) for directory in args.features)
-        status = "ok" if not findings else f"{len(findings)} finding(s)"
-        print(f"features: {files} file(s), {status}")
-    if findings and not args.json:
-        print(
-            f"codes: {', '.join(sorted({finding.code for finding in findings}))}",
-            file=sys.stderr,
-        )
+    files = sum(len(discover_features(directory)) for directory in args.features)
+    _print_findings(findings, files, as_json=args.json)
     return 1 if findings else 0
 
 

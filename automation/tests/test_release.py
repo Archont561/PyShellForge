@@ -164,7 +164,9 @@ def test_twine_with_nothing_to_check_is_an_error() -> None:
 def test_release_builds_and_checks(tmp_path: Path) -> None:
     runner = RecordingRunner()
     plan, artifacts = build.release(
-        ref="v1.2.3", dist=tmp_path / "dist", pyproject=write_manifest(tmp_path), runner=runner
+        build.Request(
+            ref="v1.2.3", dist=tmp_path / "dist", pyproject=write_manifest(tmp_path), runner=runner
+        )
     )
     assert plan.version == "1.2.3"
     assert plan.tag == "1.2.3"
@@ -177,7 +179,12 @@ def test_a_tag_mismatch_builds_nothing(tmp_path: Path) -> None:
     runner = RecordingRunner()
     with pytest.raises(build.ReleaseError, match="does not match"):
         build.release(
-            ref="v9.9.9", dist=tmp_path / "dist", pyproject=write_manifest(tmp_path), runner=runner
+            build.Request(
+                ref="v9.9.9",
+                dist=tmp_path / "dist",
+                pyproject=write_manifest(tmp_path),
+                runner=runner,
+            )
         )
     assert runner.commands == []
 
@@ -186,11 +193,13 @@ def test_check_only_writes_nothing(tmp_path: Path) -> None:
     runner = RecordingRunner()
     dist = tmp_path / "dist"
     plan, artifacts = build.release(
-        ref="v1.2.3",
-        dist=dist,
-        pyproject=write_manifest(tmp_path),
-        check_only=True,
-        runner=runner,
+        build.Request(
+            ref="v1.2.3",
+            dist=dist,
+            pyproject=write_manifest(tmp_path),
+            check_only=True,
+            runner=runner,
+        )
     )
     assert artifacts == []
     assert runner.commands == []
@@ -201,11 +210,13 @@ def test_check_only_writes_nothing(tmp_path: Path) -> None:
 def test_the_tag_check_can_be_skipped(tmp_path: Path) -> None:
     runner = RecordingRunner()
     plan, _ = build.release(
-        ref="v9.9.9",
-        dist=tmp_path / "dist",
-        pyproject=write_manifest(tmp_path),
-        skip_tag_check=True,
-        runner=runner,
+        build.Request(
+            ref="v9.9.9",
+            dist=tmp_path / "dist",
+            pyproject=write_manifest(tmp_path),
+            skip_tag_check=True,
+            runner=runner,
+        )
     )
     assert plan.tag is None
     assert plan.tag_checked is False

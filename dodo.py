@@ -37,7 +37,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 
-from automation import agents, banner, docs, forms, gherkin, readme, release
+from automation import agents, banner, clean_code, docs, forms, gherkin, readme, release
 
 #: Defaults for every invocation of ``doit`` in this repository.
 DOIT_CONFIG = {
@@ -56,6 +56,7 @@ GATES: tuple[str, ...] = (
     "lint",
     "format-check",
     "typecheck",
+    "lint-clean-code",
     "check-docs",
     "lint-features",
     "check-forms",
@@ -162,6 +163,11 @@ def task_typecheck() -> dict[str, object]:
         "basename": "typecheck",
         "actions": ["mypy --config-file packages/pyshellforge/pyproject.toml"],
     }
+
+
+def task_lint_clean_code() -> dict[str, object]:
+    """The rude Clean Code rules, which fail the gate on a warning."""
+    return {"basename": "lint-clean-code", "actions": [_run(clean_code.main)]}
 
 
 def task_alint() -> dict[str, object]:

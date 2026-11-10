@@ -121,13 +121,8 @@ def render_comment_banner(
     return "\n".join(f"{prefix}{line}" for line in art.splitlines())
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    """CLI entry point: print the art, list the fonts, or report a bad argument.
-
-    Returns:
-        0 when the art or the font list was printed, 2 when the text or the font
-        was rejected.
-    """
+def _build_parser() -> argparse.ArgumentParser:
+    """Return the argument parser behind ``python -m automation.banner``."""
     parser = argparse.ArgumentParser(
         prog="python -m automation.banner",
         description="Render text as FIGlet art. The README banner uses this module.",
@@ -162,7 +157,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         action="store_true",
         help="print every bundled font name and exit",
     )
-    args = parser.parse_args(argv)
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    """CLI entry point: print the art, list the fonts, or report a bad argument.
+
+    Returns:
+        0 when the art or the font list was printed, 2 when the text or the font
+        was rejected.
+    """
+    args = _build_parser().parse_args(argv)
 
     if args.list_fonts:
         for name in list_fonts():

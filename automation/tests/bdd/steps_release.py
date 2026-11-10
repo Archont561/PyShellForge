@@ -67,11 +67,13 @@ def _release(context: dict[str, Any], *, check_only: bool = False) -> None:
     context["artifacts"] = []
     try:
         plan, artifacts = build.release(
-            ref=context["ref"],
-            dist=Path(str(context["dist"])),
-            pyproject=Path(str(context["pyproject"])),
-            check_only=check_only,
-            runner=context["builder"],
+            build.Request(
+                ref=context["ref"],
+                dist=Path(str(context["dist"])),
+                pyproject=Path(str(context["pyproject"])),
+                check_only=check_only,
+                runner=context["builder"],
+            )
         )
     except build.ReleaseError as error:
         context["error"] = str(error)

@@ -233,6 +233,8 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       - run: mypy --config-file packages/pyshellforge/pyproject.toml
+      - name: Clean Code lint
+        run: python -m automation.clean_code
       - name: Validate workflows
         run: actionlint .github/workflows/*.yml
       - name: Coverage gate

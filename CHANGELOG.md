@@ -28,6 +28,14 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **Clean Code is enforced across the repository.** `rude` and
+  `rude-clean-code` run through `automation.clean_code`, the doit gate, hooks,
+  and CI. CC101 allows 60 lines including docstrings; the other eight rules use
+  their defaults. Findings fail the gate even though rude treats them as warnings.
+  Automation was refactored to meet those limits; the internal restore and release
+  Python APIs now group their options in `Tooling` and `Request` respectively.
+
+
 - **The README banner is rendered, not pasted.** `automation.banner` draws text
   as FIGlet art with pyfiglet, and `automation.readme` replaces a marker in
   `automation/readme/README.ejs` with its rendering of `PYSHELLFORGE`, so the
