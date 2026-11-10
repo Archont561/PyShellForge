@@ -5,6 +5,7 @@ status: To Do
 labels: [ci, coverage]
 created_date: 2026-11-09
 dependencies: []
+milestone: m-5
 references: [.github/workflows/ci.yml, packages/pyshellforge/tox.ini, .coveragerc, codecov.yml, docs/development/testing.md]
 ---
 

@@ -34,6 +34,26 @@ waits on unimplemented code stays `To Do` however detailed its criteria are.
   documentation scope in `automation/detect_changes.py`, so a change limited to
   this directory never triggers the interpreter matrix.
 
+## Milestones
+
+A milestone groups tasks around an outcome; it is not a release date or a change
+in task status. A milestone is complete when its assigned tasks meet their own
+definitions of done. Dependencies remain on the tasks, including dependencies
+between milestones. The order below is a suggested sequence, not a schedule:
+
+| Milestone | Outcome | Tasks |
+| --- | --- | --- |
+| [m-2: Bash foundation](<milestones/m-2 - Bash foundation.md>) | A small script renders as tested, formatted Bash | 11, 3 |
+| [m-1: POSIX backend and plugin surface](<milestones/m-1 - POSIX backend and plugin surface.md>) | Portable output, a documented plugin surface and the Rude plugin | 1, 2, 12 |
+| [m-3: Script authoring and validation](<milestones/m-3 - Script authoring and validation.md>) | More constructs, diagnostics, CLI and testing helpers | 4, 13–16 |
+| [m-4: Additional shells and renderer discovery](<milestones/m-4 - Additional shells and renderer discovery.md>) | Zsh, fish and a third-party renderer proof | 8–10, 17 |
+| [m-5: CI security and coverage](<milestones/m-5 - CI security and coverage.md>) | Pinned actions and combined matrix coverage | 6, 7 |
+
+The foundation precedes the POSIX and script-authoring work. The shell and
+renderer-discovery work builds on the foundation and POSIX/plugin work. CI
+security and coverage can proceed independently. `task-12` is already in progress
+and can also proceed independently of the foundation.
+
 ## Reading order
 
 [`docs/concepts/version-only-scaffold.md`](../docs/concepts/version-only-scaffold.md)

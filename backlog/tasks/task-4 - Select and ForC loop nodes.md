@@ -5,6 +5,7 @@ status: To Do
 labels: [ast, feature]
 created_date: 2026-11-09
 dependencies: [task-11]
+milestone: m-3
 references: [docs/concepts/version-only-scaffold.md]
 ---
 

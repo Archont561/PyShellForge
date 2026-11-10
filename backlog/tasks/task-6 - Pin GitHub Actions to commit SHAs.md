@@ -5,6 +5,7 @@ status: To Do
 labels: [ci, security]
 created_date: 2026-11-09
 dependencies: []
+milestone: m-5
 references: [.github/workflows/ci.yml, .github/workflows/pixi-sandbox.yml, .github/workflows/release.yml, docs/development/tooling.md]
 ---
 

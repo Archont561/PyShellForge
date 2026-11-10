@@ -5,6 +5,7 @@ status: To Do
 labels: [renderer, shells]
 created_date: 2026-11-09
 dependencies: [task-2, task-11]
+milestone: m-4
 references: [docs/concepts/version-only-scaffold.md]
 ---
 

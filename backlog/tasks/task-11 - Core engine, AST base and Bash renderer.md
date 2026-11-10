@@ -5,6 +5,7 @@ status: To Do
 labels: [ast, renderer, core]
 created_date: 2026-11-10
 dependencies: []
+milestone: m-2
 references: [packages/pyshellforge/src/pyshellforge/__init__.py, packages/pyshellforge/pyproject.toml, docs/concepts/version-only-scaffold.md, docs/development/testing.md]
 ---
 

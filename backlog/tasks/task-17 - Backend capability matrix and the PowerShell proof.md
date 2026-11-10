@@ -5,6 +5,7 @@ status: To Do
 labels: [renderer, backends]
 created_date: 2026-11-10
 dependencies: [task-11, task-1]
+milestone: m-4
 references: [docs/reference/repository-layout.md, backlog/tasks/task-8 - Zsh renderer.md, backlog/tasks/task-10 - Entry-point discovery for third-party renderers.md]
 ---
 
