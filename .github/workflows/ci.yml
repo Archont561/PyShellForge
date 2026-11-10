@@ -98,10 +98,21 @@ jobs:
         run: python -m automation.agents --check
       - name: Markdown formatting
         run: npx --yes markdownlint-cli2 "**/*.md"
+      # The installer at install.vale.sh is not resolvable from every runner, so
+      # the release archive is fetched directly from the version pixi.lock pins.
+      # That also keeps the prose result identical to `pixi run lint-prose`.
       - name: Install Vale
+        env:
+          VALE_VERSION: 3.26.0
         run: |
-          curl -fsSL https://install.vale.sh | sh
+          set -euo pipefail
+          release="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}"
+          curl -fsSL -o vale.tar.gz "${release}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf vale.tar.gz -C "$HOME/.local/bin" vale
+          rm vale.tar.gz
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/vale" --version
       # The Microsoft style package is vendored in .vale/styles, so no `vale
       # sync` (and no registry download) is needed here.
       - name: Prose
