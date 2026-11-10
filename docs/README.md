@@ -6,11 +6,33 @@ markdownlint-cli2, Vale and lychee in CI.
 
 The distribution lives in `pyshellforge/` and is a skeleton: its single module,
 `pyshellforge/src/pyshellforge/__init__.py`, exposes `VERSION`, read from the
-manifest beside it, and nothing renders shell yet. There is no user guide, no API
-reference and no CLI to document, so this tree holds the development pages that
-describe the repository itself.
+manifest beside it, and nothing renders shell yet.
 
-## Development—working on PyShellForge
+## Concepts
+
+What exists today and what is planned.
+
+| Page | Covers |
+| --- | --- |
+| [Project status](concepts/version-only-scaffold.md) | The skeleton, how `VERSION` resolves, the roadmap |
+
+## Guides
+
+Installing, using and operating the project.
+
+| Page | Covers |
+| --- | --- |
+| [Install](guides/install.md) | Prerequisites, `pip install`, the locked developer sandbox |
+
+## Reference
+
+| Page | Covers |
+| --- | --- |
+| [Repository layout](reference/repository-layout.md) | What lives where and why |
+
+## Development
+
+Working on PyShellForge itself.
 
 | Page | Covers |
 | --- | --- |
@@ -23,10 +45,12 @@ describe the repository itself.
 ## Where to start
 
 - Setting up a checkout: [Contributing](development/contributing.md).
+- Installing or using the package: [Install](guides/install.md).
 - Running or extending the checks: [Tooling](development/tooling.md).
 - Understanding what the suite proves: [Testing](development/testing.md).
 - Writing a page: [Documentation](development/documentation.md).
 - Cutting a release: [Releasing](development/releasing.md).
 
-The roadmap for the library itself lives in [`backlog/`](../backlog/) and in
-[`CHANGELOG.md`](../CHANGELOG.md).
+The roadmap for the library itself lives in
+[Project status](concepts/version-only-scaffold.md), and the working material is
+in [`backlog/`](../backlog/) and [`CHANGELOG.md`](../CHANGELOG.md).

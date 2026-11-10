@@ -29,16 +29,20 @@ The tree follows purpose, and it holds only the sections that have content:
 
 | Directory | Purpose |
 | --- | --- |
+| [`concepts/`](../concepts/) | What the project is, what exists today and what is planned |
+| [`guides/`](../guides/) | Installing, using and operating the project |
+| [`reference/`](../reference/) | Where things live, and why |
 | [`development/`](../development/) | Contribution, testing, tooling and documentation policy |
 
-`guides/`, `concepts/`, `reference/` and `architecture/` come back with the code
-that they would document. A page that describes behaviour with no implementation
-is a defect, so the tree is smaller than the repository's ambitions.
+`architecture/` comes back with the code that it would document. A page that
+describes behaviour with no implementation is a defect, so the tree stays
+smaller than the repository's ambitions.
 
-`python -m automation.docs` enforces that rule from the other side: it reads the
-section list from its own configuration, so a section that is added to the tree
-without a matching entry in the check fails, and a section the check requires
-cannot disappear.
+`python -m automation.docs` enforces the list from the other side: it reads the
+required sections from its own configuration, so a section the check requires
+cannot disappear unnoticed, and a section that is added to the tree is added to
+the list in the same change. Every required section must also hold at least one
+page.
 
 [`docs/README.md`](../README.md) is the navigation index: **every page must be
 linked from it**, which is how pages stay discoverable and how orphans are

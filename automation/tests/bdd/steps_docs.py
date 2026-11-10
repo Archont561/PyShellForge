@@ -10,9 +10,12 @@ from pytest_bdd import given, parsers, then, when
 
 from automation.docs import check
 
-#: The tree the validator requires; ``docs/development/`` is the only section
-#: that has pages while the package is a skeleton.
-SECTIONS: tuple[tuple[str, str, str], ...] = (("development", "testing", "Testing"),)
+#: One page per section the validator requires. The list comes from the
+#: validator's own configuration, so a section that is added there is scaffolded
+#: here without editing the steps and the scenarios cannot drift from the check.
+SECTIONS: tuple[tuple[str, str, str], ...] = tuple(
+    (section, "page", section.replace("-", " ").title()) for section in check.REQUIRED_SECTIONS
+)
 
 SECTION, PAGE_NAME, _TITLE = SECTIONS[0]
 PAGE = f"{SECTION}/{PAGE_NAME}.md"

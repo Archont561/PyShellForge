@@ -8,6 +8,24 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- **The README is a landing page again.** It keeps the title, the badge row,
+  install, usage, run-tests, author, contributing and license sections, and
+  routes everything else into `docs/`: the new
+  [`docs/guides/install.md`](docs/guides/install.md),
+  [`docs/reference/repository-layout.md`](docs/reference/repository-layout.md) and
+  [`docs/concepts/version-only-scaffold.md`](docs/concepts/version-only-scaffold.md)
+  hold what the page used to carry. The ASCII banner, the table of contents and
+  the static "tests-passing" badge are gone, so the first screen is the name, the
+  badges and a link to the documentation.
+- **The `python >=3.11` badge renders.** A bare `>` ended the `alt` attribute, so
+  GitHub printed the rest of the element as text instead of showing the badge.
+  Escaping does not survive the pipeline either, because readme-md-generator
+  decodes HTML entities in its own output; the alt text now spells the bound out as
+  `python 3.11+` and the URL-encoded `src` keeps the exact value.
+- **`automation.docs` requires the sections the tree keeps.** `concepts/`,
+  `guides/` and `reference/` joined `development/` in `REQUIRED_SECTIONS`, and
+  `automation/tests/test_docs_check.py` builds its fixtures from that list instead
+  of duplicating it.
 - **Repository automation is one CLI.** `scripts/` became `automation/`, and every
   repository task is now registered in `dodo.py` and run through
   `pixi run automation <task>`. Pixi keeps the environment and three entry points

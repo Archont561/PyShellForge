@@ -2,8 +2,10 @@
 Feature: Documentation validation
   Documentation is a product surface, so the repository checks it. The docs
   validator enforces the required sections, the navigation index, internal links
-  and anchors before Markdown, prose and link linters run in CI. While the package
-  is a skeleton the only section is `docs/development/`.
+  and anchors before Markdown, prose and link linters run in CI. The required
+  sections are `docs/concepts/`, `docs/guides/`, `docs/reference/` and
+  `docs/development/`, and the validator reads that list from its own
+  configuration.
 
   Background:
     Given a documentation tree with every required section

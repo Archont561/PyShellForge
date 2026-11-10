@@ -25,6 +25,7 @@ import subprocess
 import sys
 import tomllib
 from pathlib import Path
+from urllib.parse import quote
 
 import pytest
 
@@ -48,20 +49,22 @@ WEBSITE_LINE = (
     "- Website: [archont561.github.io/Archont561](https://archont561.github.io/Archont561/)"
 )
 
-#: Sections the README must keep, whatever the template looks like.
+#: Sections the README must keep, whatever the template looks like. The page is
+#: deliberately small: everything that is not a landing-page concern belongs in
+#: ``docs/``, which the Documentation section links.
 REQUIRED_SECTIONS = [
-    "What it is",
-    "Prerequisites",
+    "Documentation",
     "Install",
     "Usage",
-    "Repository layout",
     "Run tests",
-    "Roadmap",
     "Author",
     "Contributing",
     "Show your support",
     "License",
 ]
+
+#: Documentation the landing page routes into, relative to the repository root.
+DOCS_PAGES = sorted(page.relative_to(ROOT).as_posix() for page in (ROOT / "docs").rglob("*.md"))
 
 
 # ---------------------------------------------------------------------------
@@ -81,13 +84,6 @@ def pyproject() -> dict[str, object]:
 
 def headings(text: str) -> list[str]:
     return [match.group(2) for match in re.finditer(r"^(#{1,6})\s+(.*?)\s*$", text, re.M)]
-
-
-def github_anchor(heading: str) -> str:
-    """Convert a heading into the anchor GitHub generates for it."""
-    text = heading.strip().lower()
-    text = re.sub(r"[^\w\s-]", "", text, flags=re.UNICODE)
-    return re.sub(r"\s+", "-", text)
 
 
 def fenced_blocks(text: str) -> list[tuple[str, str]]:
@@ -196,13 +192,12 @@ def test_required_section_present(section: str) -> None:
     )
 
 
-def test_table_of_contents_links_resolve() -> None:
-    text = readme_text()
-    toc_links = re.findall(r"^\s*- \[[^\]]+\]\(#([^)]+)\)\s*$", text, re.M)
-    assert len(toc_links) >= 10, "the README should keep a table of contents"
-    anchors = {github_anchor(heading) for heading in headings(text)}
-    missing = [link for link in toc_links if link not in anchors]
-    assert missing == [], f"table-of-contents links without a heading: {missing}"
+def test_documentation_section_routes_every_page() -> None:
+    """The landing page names its documentation instead of repeating it."""
+    linked = set(re.findall(r"\]\(([^)\s#]+)", readme_text()))
+    assert "docs/README.md" in linked, "the README should link the documentation index"
+    missing = sorted(set(DOCS_PAGES) - linked)
+    assert missing == [], f"documentation the README never mentions: {missing}"
 
 
 # ---------------------------------------------------------------------------
@@ -251,7 +246,13 @@ def test_prerequisites_come_from_engines() -> None:
     assert isinstance(project, dict)
     assert engines["python"] == project["requires-python"]
     text = readme_text()
-    assert "- python: `>=3.11`" in text
+    python = str(engines["python"])
+    # The badge keeps the exact bound in its URL-encoded source, and spells it out
+    # in the alt text: a bare `>` ends the HTML tag, so the badge broke and the
+    # rest of the element leaked into the page instead of rendering.
+    assert f"python-{quote(python, safe='')}-blue" in text
+    assert f'alt="python {python.removeprefix(">=")}+"' in text
+    assert 'alt="python >' not in text
     # Nothing renders shell yet, so the README must not claim a shell prerequisite.
     assert "bash" not in engines
 
@@ -300,11 +301,20 @@ def test_the_nested_readme_is_the_packaging_readme() -> None:
 # the README makes no claim the package cannot back
 # ---------------------------------------------------------------------------
 def test_readme_does_not_promise_a_renderer() -> None:
-    """The skeleton ships ``VERSION``; the README must not document more."""
-    text = readme_text()
-    assert "There is no renderer, no AST and no" in text
+    """The skeleton ships ``VERSION``; the landing page must not document more."""
+    text = " ".join(readme_text().split())
+    assert "exposes `VERSION` and nothing else" in text
     for absent in ("psf render", "psf validate", "ShellScript("):
         assert absent not in text, f"the README documents {absent!r}, which does not exist"
+
+
+def test_the_status_page_states_what_is_missing() -> None:
+    """Moving prose into ``docs/`` must not soften it."""
+    page = ROOT / "docs" / "concepts" / "version-only-scaffold.md"
+    text = " ".join(page.read_text(encoding="utf-8").split())
+    assert "There is no renderer, no AST and no CLI yet" in text
+    for absent in ("psf render", "psf validate", "ShellScript("):
+        assert absent not in text, f"the status page documents {absent!r}"
 
 
 # ---------------------------------------------------------------------------

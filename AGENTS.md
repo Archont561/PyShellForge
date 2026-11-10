@@ -80,7 +80,7 @@ when only a real process can prove the behaviour.
 | `automation/` | Repository automation, with its tests in `automation/tests/` |
 | `automation/features/` | Gherkin scenarios describing the automation |
 | `automation/gherkin/` | The linter for those scenarios and their step definitions |
-| `docs/` | Documentation: `docs/README.md` indexes `docs/development/` |
+| `docs/` | Documentation: `docs/README.md` indexes `concepts/`, `guides/`, `reference/` and `development/` |
 | `backlog/` | Tasks, milestones and decision records for the library |
 | `.github/ISSUE_TEMPLATE/` | Bug report and feature request forms, plus `config.yml` |
 
@@ -244,8 +244,9 @@ pixi run automation lint-links       # lychee: external links and fragments
 pixi run automation alint            # repository conventions
 ```
 
-The tree is small on purpose: `docs/README.md` indexes `docs/development/`, and the
-user-facing sections come back with the code they document. Add legitimate project
+The tree is small on purpose: `docs/README.md` indexes `concepts/`, `guides/`,
+`reference/` and `development/`, and a section holds only the pages that have
+content. `architecture/` comes back with the code it would document. Add legitimate project
 terms to `.vale/styles/config/vocabularies/Project/accept.txt`; never disable a
 rule to silence a finding. The policy is in
 [`docs/development/documentation.md`](docs/development/documentation.md).
