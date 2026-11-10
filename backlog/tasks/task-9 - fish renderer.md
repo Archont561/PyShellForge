@@ -4,8 +4,8 @@ title: fish renderer
 status: To Do
 labels: [renderer, shells]
 created_date: 2026-11-09
-dependencies: [task-2, task-8]
-references: [docs/architecture/multi-shell.md, src/pyshellforge/renderers/quoting.py]
+dependencies: [task-2, task-8, task-11]
+references: []
 ---
 
 ## Description
@@ -25,6 +25,12 @@ of `$(cmd)`, `test` instead of `[ ]`/`[[ ]]`, `$status` instead of `$?`,
 - [ ] Quoting gains a fish branch: single quotes cannot contain a single quote, so
       the helper escapes by closing and reopening the string or by using `\\`.
 - [ ] `fish -n` and execution tests run in CI when `fish` is installed.
+
+## Files
+
+- `pyshellforge/src/pyshellforge/renderers/fish.py`
+- `pyshellforge/src/pyshellforge/renderers/quoting.py`, the helper `task-11` adds
+- `docs/reference/backends.md`, the capability matrix
 
 ## Definition of done
 

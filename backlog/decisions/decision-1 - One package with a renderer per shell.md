@@ -3,7 +3,7 @@ id: decision-1
 title: One package with a renderer and backend per shell
 date: 2026-11-09
 status: Accepted
-references: [docs/architecture/multi-shell.md, src/pyshellforge/renderers/base.py, src/pyshellforge/backends/__init__.py]
+references: [pyshellforge/pyproject.toml, pyshellforge/src/pyshellforge/__init__.py]
 ---
 
 ## Context
@@ -46,6 +46,6 @@ Third-party nodes and renderers plug in through public seams (`register_renderer
   a plugin contract before a second non-Bash renderer exists would freeze a guess.
   The registry is the seam, and `task-10` schedules the move.
 
-The long form of this decision lived in `docs/architecture/multi-shell.md`. That page went
-with the implementation when the package was reduced to its skeleton, and it comes back with
-the second renderer.
+The long form of this decision lived on a page of its own. That page went with the
+implementation when the package was reduced to its skeleton; the capability matrix comes
+back as `docs/reference/backends.md` with the second renderer (`task-8`).

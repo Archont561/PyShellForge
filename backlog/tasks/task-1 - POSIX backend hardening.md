@@ -1,18 +1,20 @@
 ---
 id: task-1
 title: POSIX backend hardening
-status: In Progress
+status: To Do
 milestone: m-1
 labels: [backend, posix]
 created_date: 2026-11-09
-dependencies: []
-references: [src/pyshellforge/backends/posix.py, src/pyshellforge/renderers/posix.py]
+dependencies: [task-11]
+references: [pyshellforge/src/pyshellforge/__init__.py, .github/workflows/ci.yml]
 ---
 
 ## Description
 
-The POSIX backend renders a `/bin/sh` subset but still needs a full audit of
-what it emits and how it refuses what it cannot express.
+The POSIX backend is where the portable subset is defined: what it can express,
+what it rewrites, and what it refuses rather than silently downgrade. Nothing
+implements it yet, so this task waits on `task-11` for the AST and the Bash
+renderer it diverges from.
 
 ## Acceptance criteria
 
@@ -27,13 +29,19 @@ what it emits and how it refuses what it cannot express.
 
 ## Definition of done
 
-- [ ] Scenarios in `features/product/` cover the accept and reject paths.
+- [ ] Scenarios in `pyshellforge/features/` cover the accept and reject paths.
 - [ ] Tests pass: `pixi run automation test-all`.
 - [ ] Coverage gate passes: `pixi run automation coverage-all`.
 - [ ] Documentation updated and `pixi run automation check-docs` passes.
 - [ ] CHANGELOG entry added under `Unreleased`.
 
+## Files
+
+- `pyshellforge/src/pyshellforge/backends/posix.py`
+- `pyshellforge/src/pyshellforge/renderers/posix.py`
+- `docs/reference/backends.md`, the capability matrix every renderer extends
+
 ## Notes
 
-Start from `tests/integration/test_bash_syntax.py`: the same golden-file strategy
-works for `sh -n`.
+The golden-file strategy that `task-3` sets up for `bash -n` carries over to
+`sh -n` unchanged.

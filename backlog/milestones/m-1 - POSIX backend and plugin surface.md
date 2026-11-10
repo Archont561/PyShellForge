@@ -1,7 +1,7 @@
 ---
 id: m-1
 title: POSIX backend and plugin surface
-status: In Progress
+status: To Do
 ---
 
 ## Goal
@@ -15,7 +15,10 @@ Bash-only syntax and third parties can add nodes without forking the renderer.
 A user can render with `--shell posix`, get either portable output or a clear
 `UnsupportedNodeError`, and follow one canonical guide for adding a node.
 
+Starts after `task-11`: a POSIX backend can only diverge from Bash once a Bash
+renderer exists, and the plugin surface needs the registry that comes with it.
+
 ## Tasks
 
-- `task-1`—POSIX backend hardening
-- `task-2`—Plugin API documentation
+- `task-1`: POSIX backend hardening
+- `task-2`: Plugin API documentation

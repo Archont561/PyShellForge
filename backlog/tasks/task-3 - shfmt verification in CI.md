@@ -4,8 +4,8 @@ title: Verify rendered output with shfmt in CI
 status: To Do
 labels: [ci, tooling]
 created_date: 2026-11-09
-dependencies: []
-references: [.github/workflows/ci.yml, tests/integration/test_bash_syntax.py]
+dependencies: [task-11]
+references: [.github/workflows/ci.yml, docs/development/testing.md]
 ---
 
 ## Description
@@ -20,6 +20,10 @@ direct promise of the renderer.
       diff.
 - [ ] Snapshots are formatted with `shfmt` so the check is stable.
 - [ ] `docs/development/testing.md` explains how to run it locally.
+
+## Files
+
+- `pyshellforge/tests/integration/test_bash_syntax.py`
 
 ## Definition of done
 

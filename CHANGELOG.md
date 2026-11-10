@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **The backlog describes this repository again.** Two tasks and the milestone
+  claimed `In Progress` against files that do not exist, every reference pointed
+  at the tree from before the package moved into `pyshellforge/`, and the
+  first phase of the roadmap had no task at all. The statuses now follow the tree,
+  `references` lists only paths that exist with the planned files moved into a
+  `## Files` section, `task-11` covers the core engine the rest of the graph waits
+  on, and `backlog/README.md` records the conventions so they stop drifting.
+
 ### Added
 
 - **The README opens with the project's ASCII banner.** The name is drawn in a

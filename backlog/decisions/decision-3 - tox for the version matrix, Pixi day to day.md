@@ -3,7 +3,7 @@ id: decision-3
 title: tox for the version matrix, Pixi for day-to-day work
 date: 2026-11-09
 status: Accepted
-references: [tox.ini, .github/workflows/ci.yml, docs/development/testing.md]
+references: [pyshellforge/tox.ini, .github/workflows/ci.yml, docs/development/testing.md]
 ---
 
 ## Context
@@ -19,7 +19,7 @@ The question was whether Pixi should also own the version matrix.
 
 ## Decision
 
-`tox.ini` owns multi-version testing; Pixi stays the day-to-day runner.
+`pyshellforge/tox.ini` owns multi-version testing; Pixi stays the day-to-day runner.
 
 - `env_list = py311, py312, py313, py314, lint, typecheck`
 - each Python environment builds a wheel, installs it with the `dev` extra, and
