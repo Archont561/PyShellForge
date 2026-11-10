@@ -4,8 +4,8 @@ title: Zsh renderer
 status: To Do
 labels: [renderer, shells]
 created_date: 2026-11-09
-dependencies: [task-2]
-references: [docs/architecture/multi-shell.md, src/pyshellforge/backends/__init__.py]
+dependencies: [task-2, task-11]
+references: [docs/concepts/version-only-scaffold.md]
 ---
 
 ## Description
@@ -22,8 +22,13 @@ needs declaring.
       `psf render --shell zsh`.
 - [ ] Every example renders, and `zsh -n` passes for each in an integration test
       (skipped when `zsh` is absent).
-- [ ] The capability matrix in `docs/architecture/multi-shell.md` loses its Zsh
-      column gaps and gains the caveats found while testing.
+- [ ] The capability matrix in `docs/reference/backends.md` gains the Zsh column and
+      the caveats found while testing.
+
+## Files
+
+- `pyshellforge/src/pyshellforge/backends/__init__.py`
+- `pyshellforge/src/pyshellforge/renderers/zsh.py`
 
 ## Definition of done
 

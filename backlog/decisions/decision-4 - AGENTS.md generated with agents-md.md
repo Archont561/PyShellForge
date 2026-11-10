@@ -63,7 +63,7 @@ with our own Python wrapper.
 
 - **Let the CLI own the file and accept its output.** Rejected: for this
   repository it emits `_TBD:` placeholders in seven of nine sections and reports
-  the stack as Node, because the commands live in `pixi.toml` and `tox.ini`. The
+  the stack as Node, because the commands live in `pixi.toml` and `pyshellforge/tox.ini`. The
   file would lose the guidance it exists for.
 - **Keep the file fully hand-written and ignore the tool.** Rejected: the user
   asked for generation and maintenance, and the marker contract is a good idea

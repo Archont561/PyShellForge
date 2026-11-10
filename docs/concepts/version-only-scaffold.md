@@ -29,4 +29,9 @@ renders shell text you can review.
 | 4 | Validation, diagnostics, CLI, `bash -n` in CI | planned |
 | 5 | Documentation, packaging, custom renderers | planned |
 
+Phase 1 is `task-11` in [`backlog/tasks/`](../../backlog/tasks/): the AST base,
+`ShellScript` and the Bash renderer for comments, variables and commands. The
+POSIX backend, the shell renderers and the plugin surface all wait on it, which
+is why the roadmap has nothing to report beyond phase 0.
+
 Back to the [documentation index](../README.md).

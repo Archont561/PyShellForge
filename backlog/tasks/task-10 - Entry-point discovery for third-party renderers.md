@@ -5,14 +5,14 @@ status: To Do
 labels: [plugins, api]
 created_date: 2026-11-09
 dependencies: [task-8, task-9]
-references: [src/pyshellforge/backends/__init__.py, docs/architecture/multi-shell.md]
+references: [pyshellforge/pyproject.toml, CONTRIBUTING.md]
 ---
 
 ## Description
 
-The registry is the seam for plugins, and it is still filled by hard-coded imports
-in `backends/__init__.py::_BACKENDS`. Once a second non-Bash renderer exists, the
-contract stops being a guess and can be published as entry points.
+Entry points are the public form of the registry seam. A second non-Bash renderer
+is what turns the backend contract from a guess into a fact, so this task waits on
+`task-8` and `task-9` before it publishes the `pyshellforge.backends` group.
 
 ## Acceptance criteria
 
@@ -20,11 +20,16 @@ contract stops being a guess and can be published as entry points.
       `ShellBackend` subclass, discovered with `importlib.metadata`.
 - [ ] `available_backends()` reports built-in and installed targets separately, and
       `psf render --shell unknown` lists both.
-- [ ] A test distribution under `tests/data/plugin_package/` proves discovery,
+- [ ] A test distribution under `pyshellforge/tests/data/plugin_package/` proves discovery,
       version mismatch, and a failing import that is reported rather than raised
       during rendering.
-- [ ] `docs/architecture/multi-shell.md` and `CONTRIBUTING.md` describe writing a
-      plugin distribution.
+- [ ] `docs/reference/backends.md` and `CONTRIBUTING.md` describe writing a plugin
+      distribution.
+
+## Files
+
+- `pyshellforge/src/pyshellforge/backends/__init__.py`
+- `pyshellforge/tests/data/plugin_package/`
 
 ## Definition of done
 

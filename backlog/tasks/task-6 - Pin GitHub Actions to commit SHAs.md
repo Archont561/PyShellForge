@@ -5,7 +5,7 @@ status: To Do
 labels: [ci, security]
 created_date: 2026-11-09
 dependencies: []
-references: [.github/workflows/ci.yml, .github/workflows/pixi-sandbox.yml]
+references: [.github/workflows/ci.yml, .github/workflows/pixi-sandbox.yml, .github/workflows/release.yml, docs/development/tooling.md]
 ---
 
 ## Description
@@ -13,6 +13,9 @@ references: [.github/workflows/ci.yml, .github/workflows/pixi-sandbox.yml]
 The workflows currently reference actions by major version tag (`@v4`, `@v5`).
 The Archont561 convention is to pin every action to a full commit SHA with the
 version in a trailing comment, so a moved tag cannot change what CI runs.
+
+`release.yml` already pins all three of its actions; `ci.yml` and
+`pixi-sandbox.yml` still carry 17 floating tags between them.
 
 ## Acceptance criteria
 
