@@ -64,7 +64,7 @@ def test_which_pixi_prefers_path() -> None:
 
 
 def test_which_pixi_falls_back_to_pixi_home(tmp_path: Path) -> None:
-    binary = tmp_path / "bin" / "pixi"
+    binary = generate.binary_path(tmp_path)
     binary.parent.mkdir(parents=True)
     binary.write_text("", encoding="utf-8")
     assert generate.which_pixi(finder=no_pixi, pixi_home=tmp_path) == str(binary)
@@ -75,7 +75,7 @@ def test_which_pixi_returns_none_when_absent(tmp_path: Path) -> None:
 
 
 def test_which_pixi_repairs_a_binary_that_lost_its_executable_bit(tmp_path: Path) -> None:
-    binary = tmp_path / "bin" / "pixi"
+    binary = generate.binary_path(tmp_path)
     binary.parent.mkdir(parents=True)
     binary.write_text("#!/bin/sh\n", encoding="utf-8")
     binary.chmod(0o644)
@@ -153,7 +153,7 @@ def test_state_serialises_with_completeness() -> None:
 
 # -- installation --------------------------------------------------------------
 def test_install_pixi_runs_the_downloaded_installer(tmp_path: Path) -> None:
-    binary = tmp_path / "bin" / "pixi"
+    binary = generate.binary_path(tmp_path)
     recorder = Recorder()
     seen: dict[str, object] = {}
 
@@ -206,7 +206,7 @@ def test_binary_path_uses_the_platform_name(tmp_path: Path) -> None:
 
 
 def test_install_pixi_raises_when_the_installer_leaves_no_executable(tmp_path: Path) -> None:
-    binary = tmp_path / "bin" / "pixi"
+    binary = generate.binary_path(tmp_path)
     binary.parent.mkdir(parents=True)
     binary.write_text("", encoding="utf-8")
     binary.chmod(0o644)
@@ -221,8 +221,9 @@ def test_install_pixi_raises_when_the_installer_leaves_no_executable(tmp_path: P
 
 
 def test_pixi_env_puts_the_binary_first_on_path() -> None:
-    env = generate.pixi_env("/opt/pixi/bin/pixi")
-    assert env["PATH"].split(":")[0] == "/opt/pixi/bin"
+    pixi = str(Path("/opt/pixi/bin/pixi"))
+    env = generate.pixi_env(pixi)
+    assert env["PATH"].split(os.pathsep)[0] == str(Path(pixi).parent)
 
 
 # -- orchestration -------------------------------------------------------------
