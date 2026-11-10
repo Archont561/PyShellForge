@@ -127,6 +127,26 @@ chore(deps): bump vale to 3.26
 Keep the subject under 72 characters, write it in the imperative, and use the body
 for why the change was needed.
 
+## Merging
+
+Merge a pull request with rebase, so `main` stays linear and every commit that
+lands on it is one the review saw:
+
+```sh
+gh pr merge --rebase <number>
+```
+
+A merge commit does not get through. GitHub writes
+`Merge pull request #123 from <branch>`, which is not a Conventional Commit, and
+the `Reject merge commits on main` step fails a push that adds one. A squash
+merge is not used either: it collapses a reviewed series into one commit and
+loses the per-commit bodies the changelog is assembled from.
+
+The GitHub setting *Require linear history* on `main` enforces the same rule
+where GitHub can, and the CI step is the half that is visible in the log.
+`convco` therefore runs without `--merges`: the check covers the commits a
+contributor writes, not the merge subject GitHub may generate.
+
 ## Releasing
 
 Publishing is a maintainer action and happens on a tag. The workflow, the guard and

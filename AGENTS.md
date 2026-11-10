@@ -265,6 +265,11 @@ rule to silence a finding. The policy is in
 - `AGENTS.md` is the single source. No `CLAUDE.md` symlink is created: symlinks in
   a Git checkout need platform-specific setup, and every agent that matters reads
   `AGENTS.md` directly.
+- `main` takes pull requests by rebase: `gh pr merge --rebase <number>`. Never
+  create a merge commit — GitHub's `Merge pull request #N from ...` subject is not
+  a Conventional Commit, and the `Reject merge commits on main` step in
+  `ci.yml` fails the push that adds one. Details in
+  [`docs/development/contributing.md`](docs/development/contributing.md#merging).
 - `gh form preview` is a manual step. In a sandbox without `gh` and `cargo` the
   forms cannot be rendered, so trust `python -m automation.forms` for the schema and
   say plainly that the visual preview did not run.

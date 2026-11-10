@@ -29,6 +29,14 @@ Plain pip works too: `python -m venv .venv && . .venv/bin/activate`,
 * **Tests for every node**—rendering, quoting, validation, and where sensible
   an integration test that runs the generated script.
 
+## Merging
+
+Pull requests are merged with rebase (`gh pr merge --rebase <number>`), so `main`
+stays linear and every commit on it is one the review saw. A merge commit is
+rejected by CI, and a squash merge would collapse a reviewed series into one
+commit. Details in
+[`docs/contributing.md`](docs/development/contributing.md#merging).
+
 ## The README is generated
 
 `README.md` and `pyshellforge/README.md` come from
