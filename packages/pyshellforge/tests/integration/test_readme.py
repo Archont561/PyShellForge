@@ -2,7 +2,7 @@
 
 Two files come out of ``python -m automation.readme``, both rendered from
 ``automation/readme/README.ejs``, whose metadata comes from ``package.json``: the
-repository ``README.md`` and ``pyshellforge/README.md``, the long description the
+repository ``README.md`` and ``packages/pyshellforge/README.md``, the long description the
 package metadata points at (hatchling refuses a readme outside the project
 directory, and PyPI needs one inside it).
 
@@ -31,10 +31,10 @@ import pytest
 
 pytestmark = pytest.mark.integration
 
-#: The project directory (``pyshellforge/``), which holds the manifest and its copy.
+#: The project directory (``packages/pyshellforge/``), which holds the manifest and its copy.
 PROJECT = Path(__file__).resolve().parents[2]
 #: The repository root, which holds the tooling and the repository README.
-ROOT = PROJECT.parent
+ROOT = PROJECT.parents[1]
 README = ROOT / "README.md"
 PROJECT_READMES = (PROJECT / "README.md", ROOT / "README.md")
 TEMPLATE = ROOT / "automation" / "readme" / "README.ejs"
@@ -298,7 +298,9 @@ def test_relative_links_resolve(readme: Path) -> None:
 def test_the_project_copy_only_rebases_relative_links() -> None:
     """The two copies are the same page: the nested one only rebases its links."""
     nested = (PROJECT / "README.md").read_text(encoding="utf-8")
-    rebased_back = re.sub(r"\]\(\.\./", "](", nested)
+    # The project copy sits below the root, so each relative link gains one
+    # "../" per level; stripping all of them must give the root page back.
+    rebased_back = re.sub(r"\]\((?:\.\./)+", "](", nested)
     assert rebased_back == readme_text()
 
 

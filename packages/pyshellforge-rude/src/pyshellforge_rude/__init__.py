@@ -3,7 +3,7 @@
 Rude discovers the ``RULES`` list through the ``rude.plugins`` entry point, so
 installing this distribution is the whole setup:
 
-    pip install pyshellforge-rude
+    pip install packages/pyshellforge-rude
     rude check src/
 """
 

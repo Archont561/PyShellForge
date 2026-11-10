@@ -8,10 +8,10 @@
 ## Overview
 
 PyShellForge aims to be a Python-native DSL that builds structured Bash. **What
-exists today is the skeleton**: the distribution lives in `pyshellforge/`, the
-package is a single module, `pyshellforge/src/pyshellforge/__init__.py`, and it
+exists today is the skeleton**: the distribution lives in `packages/pyshellforge/`, the
+package is a single module, `packages/pyshellforge/src/pyshellforge/__init__.py`, and it
 exposes one attribute, `VERSION`, read from `[project].version` in
-`pyshellforge/pyproject.toml` with fallbacks to installed distribution metadata and
+`packages/pyshellforge/pyproject.toml` with fallbacks to installed distribution metadata and
 then a constant. There is no renderer, no AST, no validator and no
 CLI, so nothing in the repository may claim otherwise.
 
@@ -30,11 +30,11 @@ Python 3.11, and the library roadmap lives in `backlog/`.
 - Discover the automation: `pixi run automation list`. Every other command in this
   file is `pixi run automation <task>`; the tasks live in `dodo.py`.
 - Test: `pixi run automation test-all`, which is
-  `python -m pytest -c pyshellforge/pyproject.toml pyshellforge/tests automation/tests`
+  `python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge/tests automation/tests`
   (the distribution is a project directory, so pytest gets its configuration
   explicitly). One suite at a time: `test` and `test-automation`. Every installed
   interpreter in its own virtualenv: `pixi run automation test-matrix`
-  (`tox -c pyshellforge/tox.ini`).
+  (`tox -c packages/pyshellforge/tox.ini`).
 - Coverage (what CI gates on): `pixi run automation coverage-all`; merge the tox
   matrix with `pixi run automation coverage-merge`.
 - Lint, format, types: `pixi run automation lint`, `format-check`, `typecheck`.
@@ -50,11 +50,11 @@ Python 3.11, and the library roadmap lives in `backlog/`.
 <!-- agents-md:begin id=testing -->
 ## Testing
 
-Two halves and one gate. `pyshellforge/tests/` covers the product and the README:
-`pyshellforge/tests/unit/test_version.py` proves `VERSION` and the order it
+Two halves and one gate. `packages/pyshellforge/tests/` covers the product and the README:
+`packages/pyshellforge/tests/unit/test_version.py` proves `VERSION` and the order it
 resolves in (the manifest, then installed metadata, then the constant), and
-`pyshellforge/tests/integration/test_readme.py` proves the generated README and its
-`pyshellforge/README.md` copy keep their sections, their links and their metadata
+`packages/pyshellforge/tests/integration/test_readme.py` proves the generated README and its
+`packages/pyshellforge/README.md` copy keep their sections, their links and their metadata
 in step with the manifest and `package.json`. `automation/tests/` covers the
 repository tooling. Gherkin scenarios in `automation/features/` bind the tooling
 to `pytest-bdd`, and `pixi run automation lint-features` fails on a step with no definition or
@@ -74,9 +74,9 @@ when only a real process can prove the behaviour.
 
 | Path | Contents |
 | --- | --- |
-| `pyshellforge/` | The distribution: manifest, package, tests, `tox.ini`, its README |
-| `pyshellforge/src/pyshellforge/` | The package: `__init__.py` exposes `VERSION`, plus `py.typed` |
-| `pyshellforge/tests/` | Product and README tests for the distribution |
+| `packages/pyshellforge/` | The distribution: manifest, package, tests, `tox.ini`, its README |
+| `packages/pyshellforge/src/pyshellforge/` | The package: `__init__.py` exposes `VERSION`, plus `py.typed` |
+| `packages/pyshellforge/tests/` | Product and README tests for the distribution |
 | `automation/` | Repository automation, with its tests in `automation/tests/` |
 | `automation/features/` | Gherkin scenarios describing the automation |
 | `automation/gherkin/` | The linter for those scenarios and their step definitions |
@@ -84,7 +84,7 @@ when only a real process can prove the behaviour.
 | `backlog/` | Tasks, milestones and decision records for the library |
 | `.github/ISSUE_TEMPLATE/` | Bug report and feature request forms, plus `config.yml` |
 
-The important code is `pyshellforge/src/pyshellforge/__init__.py` and, for the
+The important code is `packages/pyshellforge/src/pyshellforge/__init__.py` and, for the
 repository itself, `automation/restore/`, `automation/docs/`, `automation/release/` and
 `automation/forms/`. The backlog is
 the source of truth for what the library will become.
@@ -135,7 +135,7 @@ the source of truth for what the library will become.
   and docs, rather than from memory.
 - **A wheel does not ship `pyproject.toml`.** Reading the version must fall back to
   `importlib.metadata` and then to a constant, or `import pyshellforge` breaks for
-  every installed copy. `pyshellforge/tests/unit/test_version.py` pins that order.
+  every installed copy. `packages/pyshellforge/tests/unit/test_version.py` pins that order.
 - **`pixi run` fails with `Permission denied` when `~/.pixi/bin/pixi` has lost its
   executable bit**, which a restored snapshot does. `python -m automation.restore`
   repairs it; that is what the script is for.
@@ -147,7 +147,7 @@ the source of truth for what the library will become.
   run. Inject the collaborator instead.
 - **A version can be spent once.** PyPI refuses a duplicate, and
   `.github/workflows/release.yml` publishes on a `v*` tag, so
-  `pyshellforge/pyproject.toml` must carry the new version before the tag is
+  `packages/pyshellforge/pyproject.toml` must carry the new version before the tag is
   pushed. `python -m automation.release` fails before building when the tag and
   `[project].version` disagree.
 - **Doit cannot name a task with a hyphen.** A task's name comes from its
@@ -184,7 +184,7 @@ the source of truth for what the library will become.
   generated regions; keep `backlog/` status truthful.
 - ⚠️ **Ask first**: adding a dependency or a new tool; changing a public API, a
   diagnostic code or the version contract; touching `.github/workflows/`,
-  `pixi.toml`, `pyshellforge/tox.ini` or the release configuration; anything that
+  `pixi.toml`, `packages/pyshellforge/tox.ini` or the release configuration; anything that
   pushes, tags
   or publishes. Publishing is trusted publishing (OIDC) from the `pypi`
   environment, so never add an API token.
@@ -259,7 +259,7 @@ rule to silence a finding. The policy is in
   everything outside them is hand-owned and preserved. `pixi run automation agents` runs the
   CLI, `pixi run automation agents-check` validates the result offline in CI.
 - This file is curated inside the markers rather than left as a raw scan. The scanner reads npm and Python manifests; this repository's truth lives
-  in `pixi.toml`, `pyshellforge/tox.ini` and `automation/`, so an unedited scan would
+  in `pixi.toml`, `packages/pyshellforge/tox.ini` and `automation/`, so an unedited scan would
   replace
   working guidance with placeholder text. `automation.agents` fails the build if
   a stub, a missing marker or a stale `AGENTS.generated.md` sidecar reappears.

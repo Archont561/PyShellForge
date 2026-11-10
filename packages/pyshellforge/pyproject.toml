@@ -85,36 +85,36 @@ packages = ["src/pyshellforge"]
 include = ["src", "tests", "README.md"]
 
 # Run from the repository root with an explicit configuration file:
-#   python -m pytest -c pyshellforge/pyproject.toml               # the product suite
-#   python -m pytest -c pyshellforge/pyproject.toml ../automation/tests
+#   python -m pytest -c packages/pyshellforge/pyproject.toml               # the product suite
+#   python -m pytest -c packages/pyshellforge/pyproject.toml ../automation/tests
 # `pythonpath` is resolved against this file, so "src" is the package tree and
-# ".." is the repository root the suites import `automation` from. The automation
+# "../.." is the repository root the suites import `automation` from. The automation
 # suite brings its own conftest: its scenarios and step definitions live beside
 # the automation, outside this rootdir.
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-pythonpath = ["src", ".."]
+pythonpath = ["src", "../.."]
 addopts = "-ra --strict-markers"
 markers = [
     "integration: end-to-end rendering and shell syntax checks",
     "shellcheck: requires the shellcheck binary",
     "tooling: automation scenarios (automation/features/)",
-    "product: product behaviour scenarios (pyshellforge/features/)",
+    "product: product behaviour scenarios (packages/pyshellforge/features/)",
 ]
 
 # ruff configuration: ../../ruff.toml
 # coverage configuration: ../../.coveragerc
 
-# Types are checked with `mypy --config-file pyshellforge/pyproject.toml` from the
+# Types are checked with `mypy --config-file packages/pyshellforge/pyproject.toml` from the
 # repository root; mypy resolves these paths against the working directory.
 [tool.mypy]
 python_version = "3.11"
-files = ["pyshellforge/src", "pyshellforge-rude/src", "automation", "dodo.py"]
+files = ["packages/pyshellforge/src", "packages/pyshellforge-rude/src", "automation", "dodo.py"]
 # `src/` layout: name the module base explicitly so `src/pyshellforge` is checked
 # as `pyshellforge`, not `pyshellforge.src.pyshellforge`. The second entry is the
 # BDD step directory, whose modules the suite imports by bare name.
-mypy_path = "pyshellforge/src:pyshellforge-rude/src:automation/tests/bdd"
+mypy_path = "packages/pyshellforge/src:packages/pyshellforge-rude/src:automation/tests/bdd"
 explicit_package_bases = true
 warn_unused_configs = true
 warn_redundant_casts = true

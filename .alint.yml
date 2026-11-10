@@ -11,33 +11,33 @@ version: 1
 rules:
   - id: require-package-manifest
     kind: file_exists
-    paths: pyshellforge/pyproject.toml
+    paths: packages/pyshellforge/pyproject.toml
     level: error
-    message: The distribution manifest (pyshellforge/pyproject.toml) is missing.
+    message: The distribution manifest (packages/pyshellforge/pyproject.toml) is missing.
 
   - id: require-package-source
     kind: file_exists
-    paths: pyshellforge/src/pyshellforge/__init__.py
+    paths: packages/pyshellforge/src/pyshellforge/__init__.py
     level: error
-    message: The package source (pyshellforge/src/pyshellforge/) is missing.
+    message: The package source (packages/pyshellforge/src/pyshellforge/) is missing.
 
   - id: require-package-readme
     kind: file_exists
-    paths: pyshellforge/README.md
+    paths: packages/pyshellforge/README.md
     level: error
-    message: The distribution readme (pyshellforge/README.md) is missing; run `pixi run automation readme`.
+    message: The distribution readme (packages/pyshellforge/README.md) is missing; run `pixi run automation readme`.
 
   - id: require-plugin-manifest
     kind: file_exists
-    paths: pyshellforge-rude/pyproject.toml
+    paths: packages/pyshellforge-rude/pyproject.toml
     level: error
-    message: The Rude plugin manifest (pyshellforge-rude/pyproject.toml) is missing.
+    message: The Rude plugin manifest (packages/pyshellforge-rude/pyproject.toml) is missing.
 
   - id: require-plugin-source
     kind: file_exists
-    paths: pyshellforge-rude/src/pyshellforge_rude/__init__.py
+    paths: packages/pyshellforge-rude/src/pyshellforge_rude/__init__.py
     level: error
-    message: The plugin source (pyshellforge-rude/src/pyshellforge_rude/) is missing.
+    message: The plugin source (packages/pyshellforge-rude/src/pyshellforge_rude/) is missing.
 
   - id: require-pixi-manifest
     kind: file_exists
@@ -179,9 +179,9 @@ rules:
 
   - id: require-tox-config
     kind: file_exists
-    paths: pyshellforge/tox.ini
+    paths: packages/pyshellforge/tox.ini
     level: error
-    message: The multi-version test matrix (pyshellforge/tox.ini) is missing.
+    message: The multi-version test matrix (packages/pyshellforge/tox.ini) is missing.
 
   - id: require-vale-styles
     kind: file_exists

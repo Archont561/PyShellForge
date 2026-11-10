@@ -32,9 +32,9 @@ and an object pipeline from reshaping the node set that Bash needs.
 ## Files
 
 - `docs/reference/backends.md` for the capability matrix
-- `pyshellforge/src/pyshellforge/backends/` for the preamble, the artifact policy
+- `packages/pyshellforge/src/pyshellforge/backends/` for the preamble, the artifact policy
   and the capability table
-- `pyshellforge/tests/integration/` for the matrix and the refusal messages
+- `packages/pyshellforge/tests/integration/` for the matrix and the refusal messages
 
 ## Acceptance criteria
 

@@ -6,11 +6,21 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **The distributions live under `packages/`.** `pyshellforge/` became
+  `packages/pyshellforge/` and `pyshellforge-rude/` became
+  `packages/pyshellforge-rude/`, so every project the repository publishes sits
+  in one tree. The distribution names (`pyshellforge`, `pyshellforge-rude`) and
+  the module names are unchanged, so an installed copy and
+  `pip install pyshellforge` keep working. Builds, tests, linting, coverage,
+  tox, Pixi and the documentation all follow the new paths.
+
 ### Fixed
 
 - **The backlog describes this repository again.** Two tasks and the milestone
   claimed `In Progress` against files that do not exist, every reference pointed
-  at the tree from before the package moved into `pyshellforge/`, and the
+  at the tree from before the package moved into `packages/pyshellforge/`, and the
   first phase of the roadmap had no task at all. The statuses now follow the tree,
   `references` lists only paths that exist with the planned files moved into a
   `## Files` section, `task-11` covers the core engine the rest of the graph waits
@@ -19,7 +29,7 @@ All notable changes to this project are documented here. The format follows
 ### Added
 
 - **A Rude plugin checks the two casing conventions of a definition.**
-  `pyshellforge-rude/` is the repository's second distribution: a plugin that
+  `packages/pyshellforge-rude/` is the repository's second distribution: a plugin that
   registers `PSF201` (a module-level binding becomes a global shell variable, so
   it is `UPPER_CASE`) and `PSF202` (a function-scoped binding becomes a `local`,
   so it is `lower_case`) through the `rude.plugins` entry point. Both report
@@ -74,47 +84,47 @@ All notable changes to this project are documented here. The format follows
   .feature` plus `automation/tests/test_dodo.py` pin both. `dodo.py` is inside the
   coverage gate (100%) and alint requires it to exist.
 - **Scenarios and step definitions moved beside the automation.** The Gherkin
-  suite left the distribution: `pyshellforge/features/tooling/*.feature` became
+  suite left the distribution: `packages/pyshellforge/features/tooling/*.feature` became
   `automation/features/*.feature`, the step modules and the pytest-bdd runner
-  became `automation/tests/bdd/`, and `pyshellforge/conftest.py` is gone with the
-  `pytest_plugins` registration it existed for. `pyshellforge/` now holds only the
+  became `automation/tests/bdd/`, and `packages/pyshellforge/conftest.py` is gone with the
+  `pytest_plugins` registration it existed for. `packages/pyshellforge/` now holds only the
   product: its package, `VERSION` tests and the README integration test.
 - **`automation.features` became `automation.gherkin`.** The linter could not keep
   the name of the directory the scenarios now live in. It still runs as
   `pixi run automation lint-features` and now lints every tree with scenarios and
-  every tree with steps (`automation/…` and `pyshellforge/…`), tolerating the ones
+  every tree with steps (`automation/…` and `packages/pyshellforge/…`), tolerating the ones
   that do not exist yet, so a product scenario cannot be added without being
   checked.
 - **CI's change detection follows the rename.** `automation.detect_changes` emits
   `run_automation` instead of `run_scripts` and treats `automation/` as the
   automation suite; the workflow job is `Automation suite`.
 
-- **The distribution has its own directory.** `pyshellforge/` now holds the whole
+- **The distribution has its own directory.** `packages/pyshellforge/` now holds the whole
   project: `src/pyshellforge/`, `tests/`, `features/`, `tox.ini`, the manifest and
   the README PyPI shows. The repository root keeps what is repository-scoped:
   `docs/`, `scripts/`, `backlog/`, the Pixi environment and CI.
-  `pyproject.toml` moved to `pyshellforge/pyproject.toml` and is the only manifest,
+  `pyproject.toml` moved to `packages/pyshellforge/pyproject.toml` and is the only manifest,
   so pytest, mypy and tox are pointed at it explicitly
-  (`pytest -c pyshellforge/pyproject.toml`, `mypy --config-file ...`,
-  `tox -c pyshellforge/tox.ini`); `pixi run` tasks carry those paths, so the
+  (`pytest -c packages/pyshellforge/pyproject.toml`, `mypy --config-file ...`,
+  `tox -c packages/pyshellforge/tox.ini`); `pixi run` tasks carry those paths, so the
   commands contributors type did not change.
 - **A second generated README.** Hatchling refuses a README outside the project
   directory, so `python -m scripts.readme` now writes `README.md` at the root and
-  `pyshellforge/README.md`, the long description the package metadata points at.
+  `packages/pyshellforge/README.md`, the long description the package metadata points at.
   Both come from `scripts/readme/README.ejs`; the nested copy has its relative
   links rebased (`docs/` becomes `../docs/`), and `readme-check` fails if either
   file is stale.
-- **`tests/conftest.py` became `pyshellforge/conftest.py`.** pytest only accepts
+- **`tests/conftest.py` became `packages/pyshellforge/conftest.py`.** pytest only accepts
   `pytest_plugins` in a conftest at the rootdir, and the rootdir is now the project
   directory. The step-module list is unchanged.
 - **`tox.ini` moved into the project directory**, because tox builds the package it
   finds beside its configuration. The per-environment coverage data still uses the
   repository `.coveragerc` through `COVERAGE_RCFILE`.
 - **Repository tooling follows the new paths**: `scripts.release` builds
-  `pyshellforge/` and reads the version from its manifest, `scripts.features` lints
-  `pyshellforge/features/` against `pyshellforge/tests/bdd/`, `scripts.readme`
+  `packages/pyshellforge/` and reads the version from its manifest, `scripts.features` lints
+  `packages/pyshellforge/features/` against `packages/pyshellforge/tests/bdd/`, `scripts.readme`
   writes both READMEs, and `scripts.detect_changes` treats
-  `pyshellforge/features/` as documentation scope. alint gained rules for the
+  `packages/pyshellforge/features/` as documentation scope. alint gained rules for the
   package source and the package README, and the workflows, `.coveragerc`,
   `ruff.toml`, `.vale.ini`, `gherlint.toml` and `codecov.yml` moved with them.
 

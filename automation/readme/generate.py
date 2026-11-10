@@ -10,7 +10,7 @@ back into the repository.
 Two files come out of the same template:
 
 * ``README.md`` at the repository root, the page GitHub shows;
-* ``pyshellforge/README.md``, the distribution's long description. Hatchling
+* ``packages/pyshellforge/README.md``, the distribution's long description. Hatchling
   refuses a readme outside the project directory, so PyPI needs its own copy.
   Its relative links are rebased (``docs/`` becomes ``../docs/``) so both copies
   resolve from where they sit.
@@ -51,7 +51,7 @@ PACKAGE_JSON = REPO_ROOT / "package.json"
 TARGET = REPO_ROOT / "README.md"
 
 #: Generated artefact: the long description the package metadata points at.
-PROJECT_TARGET = REPO_ROOT / "pyshellforge" / "README.md"
+PROJECT_TARGET = REPO_ROOT / "packages" / "pyshellforge" / "README.md"
 
 #: Both files are rendered from the same template and must stay in sync.
 TARGETS: tuple[Path, ...] = (TARGET, PROJECT_TARGET)

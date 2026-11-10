@@ -5,7 +5,7 @@
 1. **The README states what exists.** The package is a skeleton; nothing here may
    describe a renderer, a node or a CLI that has no code behind it.
 2. **One source of truth for the version.** `VERSION` is read from
-   `[project].version` in `pyshellforge/pyproject.toml`; never hard-code a second
+   `[project].version` in `packages/pyshellforge/pyproject.toml`; never hard-code a second
    copy.
 3. **Nothing executes at import time** beyond reading that version.
 4. **Every change passes `pixi run automation check` and
@@ -29,9 +29,9 @@ the one command that does not assume Pixi exists, which is why it runs as plain
 something is missing.
 
 Plain pip works too: `python -m venv .venv && . .venv/bin/activate`,
-`pip install -e "pyshellforge[dev]"`, then
-`python -m pytest -c pyshellforge/pyproject.toml pyshellforge/tests automation/tests`.
-The distribution is the `pyshellforge/` project directory, so the manifest path is
+`pip install -e "packages/pyshellforge[dev]"`, then
+`python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge/tests automation/tests`.
+The distribution is the `packages/pyshellforge/` project directory, so the manifest path is
 part of every install and every pytest invocation.
 
 ## The checks CI runs
@@ -54,8 +54,8 @@ remember what exists.
 * alint, markdownlint-cli2, Vale and lychee.
 
 The suite itself is small, because the product is small:
-`pyshellforge/tests/unit/test_version.py` covers `VERSION` and its resolution
-order, and `pyshellforge/tests/integration/test_readme.py`
+`packages/pyshellforge/tests/unit/test_version.py` covers `VERSION` and its resolution
+order, and `packages/pyshellforge/tests/integration/test_readme.py`
 covers the README that the generator produces.
 
 ## Regenerating the README
@@ -70,7 +70,7 @@ pixi run automation readme          # rewrite README.md (npx, no npm install nee
 pixi run automation readme-check    # exit 1 if README.md is stale; CI runs this
 ```
 
-`pyshellforge/tests/integration/test_readme.py` fails if the version badge, the
+`packages/pyshellforge/tests/integration/test_readme.py` fails if the version badge, the
 prerequisites, the author or the license disagree with the manifest or
 `package.json`, if a
 table-of-contents link has no heading, if a relative link points at a file that
@@ -119,7 +119,7 @@ The order that keeps the repository honest:
 Conventional Commits, checked by `convco` in a commit-msg hook and in CI:
 
 ```text
-feat(version): read VERSION from pyshellforge/pyproject.toml
+feat(version): read VERSION from packages/pyshellforge/pyproject.toml
 fix(docs): repoint the navigation index after a move
 chore(deps): bump vale to 3.26
 ```

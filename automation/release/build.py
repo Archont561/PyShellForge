@@ -44,7 +44,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 #: The distribution lives in its own directory inside the repository.
-PROJECT_DIR_NAME = "pyshellforge"
+PROJECT_DIR_NAME = "packages/pyshellforge"
 
 #: Manifest that holds the single source of truth for the version.
 PYPROJECT_NAME = "pyproject.toml"

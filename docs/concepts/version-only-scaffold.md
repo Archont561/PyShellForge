@@ -1,7 +1,7 @@
 # Project status
 
 **What exists today is the skeleton.** The package ships one module,
-`pyshellforge/src/pyshellforge/__init__.py`, and it exposes one attribute:
+`packages/pyshellforge/src/pyshellforge/__init__.py`, and it exposes one attribute:
 
 ```python
 >>> import pyshellforge
@@ -13,7 +13,7 @@
 runs from a source checkout, falls back to installed distribution metadata, and
 last to a constant, so an import never fails.
 
-The one thing beyond the skeleton is a second distribution, `pyshellforge-rude/`:
+The one thing beyond the skeleton is a second distribution, `packages/pyshellforge-rude/`:
 a Rude plugin that checks the two casing conventions a definition has to keep, so
 a module-level binding is `UPPER_CASE` and a function-scoped one is `lower_case`.
 It needs no renderer, which is why it could ship first; see
@@ -30,7 +30,7 @@ renders shell text you can review.
 
 | Phase | Scope | State |
 | --- | --- | --- |
-| 0 | Skeleton: one module, `VERSION` read from `pyshellforge/pyproject.toml` | done |
+| 0 | Skeleton: one module, `VERSION` read from `packages/pyshellforge/pyproject.toml` | done |
 | 1 | Core engine: AST base, `ShellScript`, Bash renderer, comments, variables, commands | planned |
 | 2 | Functions, expressions, conditions, loops, arrays | planned |
 | 3 | Pipes, redirects, heredocs, subshells, command substitution | planned |

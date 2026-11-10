@@ -9,14 +9,14 @@ cannot.
 
 | Layer | Answers | Lives in | State |
 | --- | --- | --- | --- |
-| Scope casing | Does the case of a name match the scope it renders as? | [`pyshellforge-rude/`](../../pyshellforge-rude/), a Rude plugin | shipped |
+| Scope casing | Does the case of a name match the scope it renders as? | [`packages/pyshellforge-rude/`](../../packages/pyshellforge-rude/), a Rude plugin | shipped |
 | Repository checks | Formatting, types, prose, links, documentation structure | `automation/`, ruff, mypy, markdownlint, Vale | shipped |
 | Semantic validation | Unused names, constructs the target cannot express, unsafe expansions | `psf validate` | not implemented, see [`backlog/`](../../backlog/) |
 
 ## The Rude plugin
 
 [Rude](https://docs.rude.dev) is a Python linter that runs custom rules in Python
-against a semantic model of the file. `pyshellforge-rude` registers two rules
+against a semantic model of the file. The `pyshellforge-rude` distribution registers two rules
 through the `rude.plugins` entry point, so installing the distribution is the
 whole setup:
 
@@ -89,13 +89,13 @@ renderer and not a lint rule about a definition.
 ## Working on the plugin
 
 ```console
-pip install -e "pyshellforge-rude[dev]"
-python -m pytest -c pyshellforge/pyproject.toml pyshellforge-rude/tests
+pip install -e "packages/pyshellforge-rude[dev]"
+python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge-rude/tests
 ```
 
 The rules are tested through the public `Linter` API of Rude, so a test feeds a
 definition fragment to `check_source` and asserts on codes and lines. `.coveragerc`
 measures `pyshellforge_rude` in the same run as the rest of the repository, and
-`mypy` and ruff cover `pyshellforge-rude/src` from the repository root.
+`mypy` and ruff cover `packages/pyshellforge-rude/src` from the repository root.
 
 Back to the [documentation index](../README.md).

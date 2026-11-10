@@ -5,7 +5,7 @@ status: To Do
 labels: [testing, api]
 created_date: 2026-11-10
 dependencies: [task-11]
-references: [pyshellforge/pyproject.toml, docs/development/testing.md]
+references: [packages/pyshellforge/pyproject.toml, docs/development/testing.md]
 ---
 
 ## Description
@@ -16,7 +16,7 @@ valid, this construct is refused, and running the script produces this output.
 
 `pyshellforge.testing` is the public home for those four, shipped inside the
 existing wheel and importing only the standard library. The repository's own
-fixtures stay in `pyshellforge/tests/conftest.py`: same word, different audience.
+fixtures stay in `packages/pyshellforge/tests/conftest.py`: same word, different audience.
 
 The helper that matters is the last one. Rendering and comparing text proves the
 renderer and the test agree; running the result through a real shell proves the
@@ -24,11 +24,11 @@ script is a script.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/testing/__init__.py` for the helpers
-- `pyshellforge/src/pyshellforge/testing/pytest_plugin.py` for the fixtures
+- `packages/pyshellforge/src/pyshellforge/testing/__init__.py` for the helpers
+- `packages/pyshellforge/src/pyshellforge/testing/pytest_plugin.py` for the fixtures
 - `docs/reference/testing.md` for the public API, separate from
   `docs/development/testing.md`, which describes this repository's suite
-- `pyshellforge/tests/integration/test_testing.py` for the helpers tested against
+- `packages/pyshellforge/tests/integration/test_testing.py` for the helpers tested against
   themselves
 
 ## Acceptance criteria

@@ -16,8 +16,8 @@ from automation import detect_changes as dc
         (["README.md"], ("docs", False)),
         (["automation/readme/generate.py"], ("automation", False)),
         (["docs/README.md", "automation/docs/check.py"], ("docs+automation", False)),
-        (["pyshellforge/src/pyshellforge/__init__.py"], ("product", True)),
-        (["pyshellforge/pyproject.toml"], ("product", True)),
+        (["packages/pyshellforge/src/pyshellforge/__init__.py"], ("product", True)),
+        (["packages/pyshellforge/pyproject.toml"], ("product", True)),
         ([".github/workflows/ci.yml"], ("product", True)),
         ([".github/ISSUE_TEMPLATE/bug_report.yml"], ("docs", False)),
         ([], ("no-diff", True)),
@@ -29,8 +29,8 @@ def test_classify(paths: list[str], expected: tuple[str, bool]) -> None:
 
 
 def test_classify_reports_the_offending_product_path() -> None:
-    scope = dc.classify(["README.md", "pyshellforge/src/pyshellforge/core/node.py"])
-    assert scope.reason == "product:pyshellforge/src/pyshellforge/core/node.py"
+    scope = dc.classify(["README.md", "packages/pyshellforge/src/pyshellforge/core/node.py"])
+    assert scope.reason == "product:packages/pyshellforge/src/pyshellforge/core/node.py"
     assert scope.full is True
 
 

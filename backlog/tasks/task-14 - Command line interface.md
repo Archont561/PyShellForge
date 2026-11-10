@@ -5,7 +5,7 @@ status: To Do
 labels: [cli, dx]
 created_date: 2026-11-10
 dependencies: [task-11, task-13]
-references: [pyshellforge/pyproject.toml, docs/reference/linting.md, automation/detect_changes.py]
+references: [packages/pyshellforge/pyproject.toml, docs/reference/linting.md, automation/detect_changes.py]
 ---
 
 ## Description
@@ -29,11 +29,11 @@ codes are stable enough to script against.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/cli/` for the parser, one module per command and
+- `packages/pyshellforge/src/pyshellforge/cli/` for the parser, one module per command and
   the output formatting
-- `pyshellforge/src/pyshellforge/__main__.py` for `python -m pyshellforge`
+- `packages/pyshellforge/src/pyshellforge/__main__.py` for `python -m pyshellforge`
 - `docs/reference/cli.md` for the commands, the flags and the exit codes
-- `pyshellforge/tests/integration/test_cli.py` for the end-to-end runs
+- `packages/pyshellforge/tests/integration/test_cli.py` for the end-to-end runs
 
 ## Acceptance criteria
 

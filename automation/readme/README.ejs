@@ -21,7 +21,7 @@
 <% if (projectVersion) { -%>
   <img alt="Version: <%= projectVersion %>" src="https://img.shields.io/badge/version-<%= projectVersion %>-blue.svg?cacheSeconds=2592000" />
 <% } -%>
-<%# HTML links are not rebased into the ``pyshellforge/`` copy, only markdown
+<%# HTML links are not rebased into the ``packages/pyshellforge/`` copy, only markdown
     ones are, so the badge points at the published page instead of a relative
     path that would only resolve in one of the two copies. -%>
   <a href="https://github.com/<%- authorGithubUsername %>/<%- projectName %>/blob/main/docs/README.md" target="_blank">

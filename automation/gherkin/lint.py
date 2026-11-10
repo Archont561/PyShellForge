@@ -3,7 +3,7 @@
 The repository describes behaviour in ``*.feature`` files and binds it to
 ``pytest-bdd`` step definitions. This module keeps the two in sync and enforces
 the house style for scenarios. Scenarios live beside the code they describe:
-``automation/features/`` for the automation, ``pyshellforge/features/`` for the
+``automation/features/`` for the automation, ``packages/pyshellforge/features/`` for the
 product once it has any, with the step definitions under the matching ``tests/``.
 
 It is a strict, offline counterpart to
@@ -45,11 +45,11 @@ TAG = re.compile(r"^\s*(@[\w:.-]+(?:\s+@[\w:.-]+)*)\s*$")
 #: tolerated, so the product tree may appear later.
 FEATURES_DIRS: tuple[Path, ...] = (
     REPO_ROOT / "automation" / "features",
-    REPO_ROOT / "pyshellforge" / "features",
+    REPO_ROOT / "packages" / "pyshellforge" / "features",
 )
 STEPS_DIRS: tuple[Path, ...] = (
     REPO_ROOT / "automation" / "tests" / "bdd",
-    REPO_ROOT / "pyshellforge" / "tests" / "bdd",
+    REPO_ROOT / "packages" / "pyshellforge" / "tests" / "bdd",
 )
 
 #: Order of the narrative phases; ``And``/``But``/``*`` inherit the previous one.

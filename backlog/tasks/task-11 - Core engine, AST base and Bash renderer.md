@@ -5,7 +5,7 @@ status: To Do
 labels: [ast, renderer, core]
 created_date: 2026-11-10
 dependencies: []
-references: [pyshellforge/src/pyshellforge/__init__.py, pyshellforge/pyproject.toml, docs/concepts/version-only-scaffold.md, docs/development/testing.md]
+references: [packages/pyshellforge/src/pyshellforge/__init__.py, packages/pyshellforge/pyproject.toml, docs/concepts/version-only-scaffold.md, docs/development/testing.md]
 ---
 
 ## Description
@@ -21,13 +21,13 @@ quoted, and how a construct the target cannot express fails.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/core/` for `ShellScript` and the node registry
-- `pyshellforge/src/pyshellforge/ast/` for the node base and the three nodes
-- `pyshellforge/src/pyshellforge/renderers/bash.py` for the renderer and the quoting helper
-- `pyshellforge/src/pyshellforge/ast/nodes/echo.py` for `Echo` and the interpolation kinds
+- `packages/pyshellforge/src/pyshellforge/core/` for `ShellScript` and the node registry
+- `packages/pyshellforge/src/pyshellforge/ast/` for the node base and the three nodes
+- `packages/pyshellforge/src/pyshellforge/renderers/bash.py` for the renderer and the quoting helper
+- `packages/pyshellforge/src/pyshellforge/ast/nodes/echo.py` for `Echo` and the interpolation kinds
 - `docs/concepts/ast-design.md` for why the tree has this shape
 - `docs/reference/api-reference.md` for the public surface
-- `pyshellforge/features/` for the scenarios, once the first node lands
+- `packages/pyshellforge/features/` for the scenarios, once the first node lands
 
 ## Acceptance criteria
 
@@ -54,7 +54,7 @@ quoted, and how a construct the target cannot express fails.
 
 - [ ] Unit tests per node, tests for the quoting helper, and golden files.
 - [ ] One execution test that renders and runs `bash -n` on the result.
-- [ ] A Gherkin scenario in `pyshellforge/features/` with its step module.
+- [ ] A Gherkin scenario in `packages/pyshellforge/features/` with its step module.
 - [ ] Both documentation pages exist, `docs/README.md` links them, and
       `pixi run automation check-docs` passes.
 - [ ] `pixi run automation check` and `pixi run automation coverage-all` pass.

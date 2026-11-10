@@ -3,7 +3,7 @@ id: decision-1
 title: One package with a renderer and backend per shell
 date: 2026-11-09
 status: Accepted
-references: [pyshellforge/pyproject.toml, pyshellforge/src/pyshellforge/__init__.py]
+references: [packages/pyshellforge/pyproject.toml, packages/pyshellforge/src/pyshellforge/__init__.py]
 ---
 
 ## Context

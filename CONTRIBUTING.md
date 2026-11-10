@@ -15,8 +15,8 @@ pixi run automation check          # every check, as one task graph
 ```
 
 Plain pip works too: `python -m venv .venv && . .venv/bin/activate`,
-`pip install -e "pyshellforge[dev]"`, then
-`python -m pytest -c pyshellforge/pyproject.toml pyshellforge/tests automation/tests`.
+`pip install -e "packages/pyshellforge[dev]"`, then
+`python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge/tests automation/tests`.
 
 ## What we care about
 
@@ -39,7 +39,7 @@ commit. Details in
 
 ## The README is generated
 
-`README.md` and `pyshellforge/README.md` come from
+`README.md` and `packages/pyshellforge/README.md` come from
 [`automation/readme/README.ejs`](automation/readme/README.ejs) via
 readme-md-generator, driven by the Python module `python -m automation.readme` with
 metadata from `package.json`:
@@ -54,7 +54,7 @@ Edit the template or `package.json`, never `README.md` directly. Details in
 
 ## Adding behaviour
 
-The package is a skeleton: `pyshellforge/src/pyshellforge/__init__.py` exposes `VERSION` and nothing
+The package is a skeleton: `packages/pyshellforge/src/pyshellforge/__init__.py` exposes `VERSION` and nothing
 else. Behaviour comes back through `backlog/`, and a change is complete only when
 all of these are true:
 

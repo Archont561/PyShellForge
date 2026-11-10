@@ -43,4 +43,4 @@ known-first-party = [
 known-third-party = ["pytest", "pytest_bdd", "hypothesis"]
 
 [lint.per-file-ignores]
-"pyshellforge/tests/**" = ["B011"]
+"packages/pyshellforge/tests/**" = ["B011"]
