@@ -132,3 +132,11 @@ def test_a_failing_release_build_fails_the_task(release_argv: list[list[str]]) -
     dodo.release.main = failing  # type: ignore[assignment]
     with pytest.raises(RuntimeError, match="exit status 1"):
         dodo._release_build()
+
+
+def test_clean_code_is_a_gate_and_propagates_findings(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert "lint-clean-code" in dodo.GATES
+    monkeypatch.setattr(dodo.clean_code, "main", lambda argv: 1)
+    action = tasks()["lint-clean-code"]["actions"][0]
+    with pytest.raises(RuntimeError, match="exit status 1"):
+        action()

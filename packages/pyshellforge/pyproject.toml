@@ -62,6 +62,9 @@ dev = [
     "types-pyyaml>=6.0",
     # The README banner is FIGlet art (automation.banner), rendered, not pasted.
     "pyfiglet>=1.0.4,<2",
+    # Clean Code rules: rude is the linter, rude-clean-code the rule plugin.
+    "rude>=0.1a4,<0.2",
+    "rude-clean-code>=0.1,<0.2",
 ]
 # Documentation tooling: repository policy and Gherkin style. markdownlint-cli2,
 # Vale and lychee are standalone binaries wired through Pixi (see pixi.toml).
@@ -109,6 +112,20 @@ markers = [
 
 # ruff configuration: ../../ruff.toml
 # coverage configuration: ../../.coveragerc
+
+# Clean Code linting: `python -m automation.clean_code` runs
+#   python -m rude check --config packages/pyshellforge/pyproject.toml <paths>
+# over the same trees mypy checks. Only the CC family is selected, because ruff
+# owns everything else; the rules come from the rude-clean-code plugin, which
+# rude discovers through its `rude.plugins` entry point.
+[tool.rude]
+select = ["CC"]
+
+[tool.rude.rules.CC101]
+# The rule counts the whole definition: signature, docstring and blank lines.
+# Every function in this repository carries a docstring, so 60 keeps a function
+# to one operation while leaving room for the prose that explains it.
+max_lines = 60
 
 # Types are checked with `mypy --config-file packages/pyshellforge/pyproject.toml` from the
 # repository root; mypy resolves these paths against the working directory.

@@ -12,6 +12,7 @@ from pytest_bdd import scenarios
 
 scenarios(
     "../../features/agents_file.feature",
+    "../../features/clean_code.feature",
     "../../features/readme_generation.feature",
     "../../features/session_restore.feature",
     "../../features/docs_validation.feature",

@@ -9,6 +9,8 @@ pre-commit:
       run: pixi run --locked automation format-check
     - name: python-types
       run: pixi run --locked automation typecheck
+    - name: clean-code
+      run: pixi run --locked automation lint-clean-code
     - name: gherkin-lint
       run: pixi run --locked automation lint-features
     - name: documentation

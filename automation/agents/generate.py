@@ -200,63 +200,54 @@ def _heading_of(body: str) -> str | None:
     return None
 
 
-def check_agents(root: Path = REPO_ROOT) -> list[Finding]:
-    """Validate ``root/AGENTS.md`` against the agents-md marker contract.
+def _stub_findings(relative: str, line: int, body: str, section: str) -> list[Finding]:
+    """Report every agents-md stub the CLI left inside a section body."""
+    return [
+        Finding(
+            relative,
+            line + offset,
+            "PSF-AGENT-005",
+            f"fill in the agents-md stub in section {section!r} or move the fact outside the markers",
+        )
+        for offset, content in enumerate(body.splitlines())
+        if STUB in content
+    ]
 
-    The checks are offline and deterministic: they read the committed file and
-    look for the sidecar, nothing else.
-    """
-    root = Path(root)
-    target = root / TARGET.name
-    relative = TARGET.name
-    findings: list[Finding] = []
 
-    if not target.is_file():
+def _check_section(relative: str, text: str, section: str) -> list[Finding]:
+    """Check the markers, the heading and the stubs of one generated section."""
+    body = section_body(text, section)
+    if body is None:
         return [
-            Finding(relative, 1, "PSF-AGENT-001", "AGENTS.md must exist at the repository root")
+            Finding(
+                relative,
+                1,
+                "PSF-AGENT-002",
+                f"generated section {section!r} is missing its markers ({begin_marker(section)})",
+            )
         ]
+    line = _line_of(text, begin_marker(section))
+    if not body:
+        return [Finding(relative, line, "PSF-AGENT-004", f"generated section {section!r} is empty")]
 
-    text = target.read_text(encoding="utf-8")
+    findings: list[Finding] = []
+    heading = _heading_of(body)
+    if heading != TITLES[section]:
+        findings.append(
+            Finding(
+                relative,
+                line,
+                "PSF-AGENT-007",
+                f"section {section!r} must be headed {TITLES[section]!r}, found {heading!r}",
+            )
+        )
+    findings.extend(_stub_findings(relative, line, body, section))
+    return findings
 
-    for section in SECTIONS:
-        body = section_body(text, section)
-        if body is None:
-            findings.append(
-                Finding(
-                    relative,
-                    1,
-                    "PSF-AGENT-002",
-                    f"generated section {section!r} is missing its markers ({begin_marker(section)})",
-                )
-            )
-            continue
-        line = _line_of(text, begin_marker(section))
-        if not body:
-            findings.append(
-                Finding(relative, line, "PSF-AGENT-004", f"generated section {section!r} is empty")
-            )
-            continue
-        heading = _heading_of(body)
-        if heading != TITLES[section]:
-            findings.append(
-                Finding(
-                    relative,
-                    line,
-                    "PSF-AGENT-007",
-                    f"section {section!r} must be headed {TITLES[section]!r}, found {heading!r}",
-                )
-            )
-        for offset, content in enumerate(body.splitlines()):
-            if STUB in content:
-                findings.append(
-                    Finding(
-                        relative,
-                        line + offset,
-                        "PSF-AGENT-005",
-                        f"fill in the agents-md stub in section {section!r} or move the fact outside the markers",
-                    )
-                )
 
+def _check_structure(root: Path, relative: str, text: str) -> list[Finding]:
+    """Check the marker order and the sidecar the CLI writes without markers."""
+    findings: list[Finding] = []
     present = markers_in(text)
     if present and present != [section for section in SECTIONS if section in present]:
         findings.append(
@@ -267,7 +258,6 @@ def check_agents(root: Path = REPO_ROOT) -> list[Finding]:
                 "generated sections are not in the order agents-md writes them",
             )
         )
-
     if (root / SIDECAR.name).is_file():
         findings.append(
             Finding(
@@ -277,7 +267,29 @@ def check_agents(root: Path = REPO_ROOT) -> list[Finding]:
                 "delete the sidecar and restore the markers in AGENTS.md; the CLI writes a sidecar only when it finds no markers",
             )
         )
+    return findings
 
+
+def check_agents(root: Path = REPO_ROOT) -> list[Finding]:
+    """Validate ``root/AGENTS.md`` against the agents-md marker contract.
+
+    The checks are offline and deterministic: they read the committed file and
+    look for the sidecar, nothing else.
+    """
+    root = Path(root)
+    target = root / TARGET.name
+    relative = TARGET.name
+
+    if not target.is_file():
+        return [
+            Finding(relative, 1, "PSF-AGENT-001", "AGENTS.md must exist at the repository root")
+        ]
+
+    text = target.read_text(encoding="utf-8")
+    findings: list[Finding] = []
+    for section in SECTIONS:
+        findings.extend(_check_section(relative, text, section))
+    findings.extend(_check_structure(root, relative, text))
     return findings
 
 

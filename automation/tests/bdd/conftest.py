@@ -27,6 +27,7 @@ from pytest_bdd.steps import StepNamePrefix
 #: uses and a step no module defines.
 STEP_MODULES = (
     "steps_agents",
+    "steps_clean_code",
     "steps_automation_cli",
     "steps_docs",
     "steps_features",

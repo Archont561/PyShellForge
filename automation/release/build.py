@@ -64,6 +64,18 @@ class ReleaseError(RuntimeError):
 
 
 @dataclass(frozen=True)
+class Request:
+    """What a release run is asked to do; the defaults mirror the command line."""
+
+    ref: str | None = None
+    dist: Path | str = REPO_ROOT / DIST_NAME
+    pyproject: str | Path = REPO_ROOT / PROJECT_DIR_NAME / PYPROJECT_NAME
+    check_only: bool = False
+    skip_tag_check: bool = False
+    runner: Runner | None = None
+
+
+@dataclass(frozen=True)
 class Plan:
     """What the release build is about to do, printed before it happens."""
 
@@ -162,27 +174,20 @@ def check_distributions(artifacts: Sequence[Path], *, runner: Runner | None = No
     run(["python", "-m", "twine", "check", *(str(path) for path in artifacts)])
 
 
-def release(
-    *,
-    ref: str | None = None,
-    dist: Path | str = REPO_ROOT / DIST_NAME,
-    pyproject: str | Path = REPO_ROOT / PROJECT_DIR_NAME / PYPROJECT_NAME,
-    check_only: bool = False,
-    skip_tag_check: bool = False,
-    runner: Runner | None = None,
-) -> tuple[Plan, list[Path]]:
+def release(request: Request | None = None) -> tuple[Plan, list[Path]]:
     """Run the release build and return the plan it followed and its artifacts."""
-    version = read_package_version(pyproject)
-    tag = None if skip_tag_check else verify_tag(ref, version)
-    directory = Path(dist)
+    asked = request or Request()
+    version = read_package_version(asked.pyproject)
+    tag = None if asked.skip_tag_check else verify_tag(asked.ref, version)
+    directory = Path(asked.dist)
     # ``tag_checked`` reports whether a tag was actually compared, so a local run
     # without one is visible in the output instead of looking like a pass.
     plan = Plan(version=version, tag=tag, tag_checked=tag is not None, dist=str(directory))
-    if check_only:
+    if asked.check_only:
         return plan, []
     clean_distributions(directory)
-    artifacts = build_distributions(directory, runner=runner)
-    check_distributions(artifacts, runner=runner)
+    artifacts = build_distributions(directory, runner=asked.runner)
+    check_distributions(artifacts, runner=asked.runner)
     return plan, artifacts
 
 
@@ -209,11 +214,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     ref = args.ref if args.ref is not None else os.environ.get(CI_REF_ENV)
     try:
         plan, artifacts = release(
-            ref=ref,
-            dist=args.dist,
-            pyproject=args.pyproject,
-            check_only=args.check,
-            skip_tag_check=args.skip_tag_check,
+            Request(
+                ref=ref,
+                dist=args.dist,
+                pyproject=args.pyproject,
+                check_only=args.check,
+                skip_tag_check=args.skip_tag_check,
+            )
         )
     except ReleaseError as error:
         print(f"release: {error}")
