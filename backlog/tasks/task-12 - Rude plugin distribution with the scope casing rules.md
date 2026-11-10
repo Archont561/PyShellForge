@@ -21,7 +21,7 @@ place a reader can see which one it is. `PSF201` and `PSF202` enforce one half o
 that pair each.
 
 The distribution is `pyshellforge-rude/`, mirroring the layout of
-`Archont561/rude-clean-code`. The rules read Rude's semantic model instead of
+`Archont561/rude-clean-code`. The rules read the semantic model of Rude instead of
 columns, so imports, class bodies, `global` declarations, `self`, `cls` and `_`
 are all handled by the model rather than by a heuristic.
 

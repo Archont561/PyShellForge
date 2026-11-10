@@ -33,7 +33,7 @@ project targets.
 Ship the source-level rules as `pyshellforge-rude`, a second distribution in this
 repository, and keep every rule that needs the compiler out of it.
 
-- The distribution registers its rules through Rude's `rude.plugins` entry point,
+- The distribution registers its rules through the `rude.plugins` entry point,
   so `pip install pyshellforge-rude` is the whole setup. `pyshellforge` keeps
   `dependencies = []`; Rude is never a runtime requirement of the generator.
 - The first two rules are the casing pair: `PSF201` (a module-level binding is
@@ -49,7 +49,7 @@ repository, and keep every rule that needs the compiler out of it.
 - The rule codes come from the same families the validator will use (names are
   `PSF2xx`), so a convention has one code in both engines and a suppression in a
   definition keeps working when `psf validate` lands.
-- No automatic fix. Renaming a binding means rewriting every reference, and Rude's fix
+- No automatic fix. Renaming a binding means rewriting every reference, and the fix
   API is per node, which makes a partial rename likely and a wrong rename silent.
 
 The work is split three ways, and a rule belongs to exactly one layer:
