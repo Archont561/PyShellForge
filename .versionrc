@@ -1,0 +1,40 @@
+# Conventional Commit configuration for convco.
+header: |
+  # Changelog
+
+  All notable changes to PyShellForge are documented here. The format follows
+  [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
+  [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+types:
+  - type: feat
+    section: Added
+    hidden: false
+  - type: fix
+    section: Fixed
+    hidden: false
+  - type: perf
+    section: Performance
+    hidden: false
+  - type: refactor
+    section: Changed
+    hidden: false
+  - type: docs
+    section: Documentation
+    hidden: false
+  - type: test
+    section: Tests
+    hidden: true
+  - type: build
+    section: Build
+    hidden: true
+  - type: ci
+    section: CI
+    hidden: true
+  - type: chore
+    section: Maintenance
+    hidden: true
+  - type: style
+    section: Styling
+    hidden: true
+preMajor: true
+releaseCommitMessageFormat: "chore(release): {{currentTag}}"

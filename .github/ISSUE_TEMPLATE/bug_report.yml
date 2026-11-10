@@ -1,0 +1,85 @@
+name: Bug report
+description: The package, the tooling or the documentation does not do what it says
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. The package is a skeleton: `pyshellforge`
+        exposes `VERSION`, read from `pyproject.toml`, and nothing renders shell
+        yet. Reports about the tooling, the documentation or the packaging are as
+        welcome as reports about the package.
+
+        Security-sensitive reports belong in a private advisory, not here.
+  - type: input
+    id: version
+    attributes:
+      label: PyShellForge version
+      description: Output of `python -c "import pyshellforge; print(pyshellforge.VERSION)"`.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: python
+    attributes:
+      label: Python version
+      options:
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - "3.14"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Where the problem shows up. Select every area that applies.
+      multiple: true
+      options:
+        - The package (import, VERSION)
+        - Packaging and installation
+        - Repository tooling (scripts/)
+        - Tests and CI
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: What did you run?
+      description: The commands, kept as short as possible, and the full output.
+      render: shell
+      placeholder: |
+        python -c "import pyshellforge; print(pyshellforge.VERSION)"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+      description: Include the traceback when there is one.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Operating system, how PyShellForge was installed, related issues.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched the existing issues for the same problem.
+          required: true
+        - label: This is not a security report.
+          required: true

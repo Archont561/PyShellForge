@@ -1,0 +1,25 @@
+# Coverage configuration for both suites.
+#
+#   pixi run automation coverage-all    # tests plus the gate below
+#   tox -c pyshellforge/tox.ini -e coverage   # merge per-interpreter data
+#
+# `source` names the measured trees rather than the tests, so a module that no
+# test imports counts as 0% instead of disappearing from the report. The package
+# is resolved through the installed distribution; `automation` is imported from
+# the repository root.
+[run]
+source =
+    pyshellforge
+    automation
+# Tests describe the code, so counting them would let a low-coverage assertion
+# hide behind a high-coverage suite.
+omit =
+    pyshellforge/tests/*
+    pyshellforge/conftest.py
+    automation/tests/*
+
+[report]
+# The gate belongs to coverage.py, not Codecov: a local run and CI fail together.
+fail_under = 90
+show_missing = True
+skip_covered = False

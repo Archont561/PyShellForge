@@ -1,0 +1,34 @@
+# Markdown formatting and consistency.
+#
+#   npx markdownlint-cli2 "**/*.md"
+#
+# The rules below are the defaults, relaxed only where this repository
+# deliberately differs: the README is generated (inline HTML badges and an
+# ASCII wordmark) and generated tables are long.
+config:
+  default: true
+  MD013: false # line length is handled by prettier-style formatting, not lint
+  MD024:
+    siblings_only: true # repeated "Added"/"Fixed" headings in the changelog
+  MD033: false # inline HTML for centred badges in the generated README
+  MD034: true
+  MD040: true # fenced code blocks must declare a language
+  MD041: true # first line in a file must be a top-level heading
+  MD046:
+    style: fenced
+  MD048:
+    style: backtick
+
+globs:
+  - "**/*.md"
+
+# Generated and vendored trees anywhere in the repository: the distribution
+# directory has its own environment and tox workdir.
+ignores:
+  - "**/.tox/**"
+  - "**/.pixi/**"
+  - "**/.venv/**"
+  - "**/node_modules/**"
+  - "**/.vale/**"
+  - "**/coverage_html/**"
+  - "CHANGELOG.md"

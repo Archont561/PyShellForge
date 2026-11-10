@@ -1,0 +1,276 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      scope: ${{ steps.detect.outputs.scope }}
+      run_docs: ${{ steps.detect.outputs.run_docs }}
+      run_automation: ${{ steps.detect.outputs.run_automation }}
+      run_full: ${{ steps.detect.outputs.run_full }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select checks
+        id: detect
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: python -m automation.detect_changes --base "$BASE_SHA" --head "$HEAD_SHA" --event "$EVENT_NAME" --github-output
+
+  commit-messages:
+    name: Conventional commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@v0
+        with:
+          pixi-version: latest
+      - name: Check commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "No base commit; skipping."
+            exit 0
+          fi
+          pixi run --locked -x convco check --merges "$BASE_SHA..$HEAD_SHA"
+
+  docs:
+    name: Documentation and repository policy
+    needs: changes
+    if: needs.changes.outputs.run_docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install documentation tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "pyshellforge[docs]"
+      - name: Documentation structure, navigation and links
+        run: python -m automation.docs
+      - name: Gherkin and step definitions
+        run: python -m automation.gherkin
+      - name: Gherkin style
+        run: python -m gherlint lint automation/features
+      # GitHub renders forms from YAML and fails quietly, so the schema is
+      # checked here. Rendering them needs `gh form preview` and a browser.
+      - name: Issue forms
+        run: python -m automation.forms
+      - name: Node for the README generator
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: README is regenerated, not hand-edited
+        run: npm run --silent readme:check
+      - name: AGENTS.md keeps the agents-md marker contract
+        run: python -m automation.agents --check
+      - name: Markdown formatting
+        run: npx --yes markdownlint-cli2 "**/*.md"
+      # The installer at install.vale.sh is not resolvable from every runner, so
+      # the release archive is fetched directly from the version pixi.lock pins.
+      # That also keeps the prose result identical to `pixi run lint-prose`.
+      - name: Install Vale
+        env:
+          VALE_VERSION: 3.26.0
+        run: |
+          set -euo pipefail
+          release="https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}"
+          curl -fsSL -o vale.tar.gz "${release}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf vale.tar.gz -C "$HOME/.local/bin" vale
+          rm vale.tar.gz
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/vale" --version
+      # The Microsoft style package is vendored in .vale/styles, so no `vale
+      # sync` (and no registry download) is needed here.
+      - name: Prose
+        run: vale --config .vale.ini --no-global README.md AGENTS.md CONTRIBUTING.md CHANGELOG.md docs pyshellforge/README.md automation/features backlog
+      - name: Links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config lychee.toml --no-progress .
+          fail: true
+      - name: Repository conventions
+        run: alint check
+      - name: Check whitespace in changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            BASE_SHA="$(git merge-base "$BASE_SHA" "$HEAD_SHA")"
+          fi
+          git diff --check "$BASE_SHA" "$HEAD_SHA" --
+
+  automation:
+    name: Automation suite
+    needs: changes
+    if: needs.changes.outputs.run_automation == 'true' || needs.changes.outputs.run_docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e "pyshellforge[dev]" "doit>=0.36,<1"
+      - run: python -m pytest -c pyshellforge/pyproject.toml automation/tests -q
+      - run: python -m automation.gherkin
+      - run: python -m automation.docs
+      # The registry is part of the contract: dodo.py must still import and register.
+      - run: python -m doit list
+
+  full:
+    name: Full checks and coverage
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install the toolchain
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e "pyshellforge[dev]" actionlint-py
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy --config-file pyshellforge/pyproject.toml
+      - name: Validate workflows
+        run: actionlint .github/workflows/*.yml
+      - name: Coverage gate
+        run: python -m pytest -c pyshellforge/pyproject.toml pyshellforge/tests automation/tests --cov --cov-report=term-missing --cov-report=xml:coverage.xml
+      - name: Upload coverage to Codecov
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+      - name: Explain skipped upload for fork pull requests
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: echo 'Codecov upload skipped for fork pull requests; tests and coverage still ran.'
+
+  packaging:
+    name: Build and install the wheel
+    needs: changes
+    if: needs.changes.outputs.run_full == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install --upgrade pip build twine
+      - name: Build sdist and wheel
+        run: python -m build --outdir dist pyshellforge
+      - name: Check metadata
+        run: python -m twine check dist/*
+      - name: Wheel contents
+        run: |
+          python - <<'PY'
+          import glob
+          import zipfile
+
+          wheel = sorted(glob.glob("dist/*.whl"))[-1]
+          names = zipfile.ZipFile(wheel).namelist()
+          assert any(n.endswith("pyshellforge/py.typed") for n in names), "py.typed missing"
+          assert any(n.endswith("pyshellforge/__init__.py") for n in names), "__init__.py missing"
+          assert not any("automation/" in n for n in names), "repository automation must not ship"
+          print(f"{wheel}: contents ok")
+          PY
+
+  compatibility:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
+    needs: changes
+    if: needs.changes.outputs.run_full == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.11', '3.12', '3.13', '3.14']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install tox
+        run: python -m pip install --upgrade "tox>=4.20"
+      # `-e py` selects the environment matching the interpreter setup-python put
+      # on PATH: the matrix cell decides the version, tox builds the wheel and
+      # installs it with the dev extra in a fresh virtualenv, so this is what a
+      # user gets from PyPI rather than an editable install of the checkout.
+      - name: Build and test in an isolated environment
+        run: python -m tox -c pyshellforge/tox.ini -e py
+
+  ci-result:
+    name: CI result
+    if: always()
+    needs: [changes, commit-messages, docs, automation, full, packaging, compatibility]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify every selected job passed
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          COMMITS: ${{ needs.commit-messages.result }}
+          DOCS: ${{ needs.docs.result }}
+          AUTOMATION: ${{ needs.automation.result }}
+          FULL: ${{ needs.full.result }}
+          PACKAGING: ${{ needs.packaging.result }}
+          COMPATIBILITY: ${{ needs.compatibility.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for job in CHANGES COMMITS DOCS AUTOMATION FULL PACKAGING COMPATIBILITY; do
+            result="${!job}"
+            case "$result" in
+              success|skipped) ;;
+              *) echo "::error::$job finished with '$result'"; failed=1 ;;
+            esac
+          done
+          exit "$failed"

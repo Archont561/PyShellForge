@@ -1,0 +1,18 @@
+# Gherkin lint configuration.
+#
+# Two checkers read this file:
+#   * gherlint (third-party, `python -m gherlint lint automation/features`)
+#   * python -m automation.gherkin (repository automation, always available offline)
+#
+# Both must report no findings.
+[reporting]
+# Codes to suppress. Empty: every finding is an error in CI.
+disable = []
+
+[paths]
+features = "automation/features"
+steps = "automation/tests/bdd"
+
+[tags]
+# Scenario tags are pytest markers; keep the list closed so typos are caught.
+allowed = ["tooling", "product"]

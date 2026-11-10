@@ -1,0 +1,232 @@
+# Repository conventions and structural rules.
+#
+#   pixi run automation alint      # or: alint check
+#
+# Only file-presence rules are used here: content rules belong to ruff (Python),
+# markdownlint-cli2 (Markdown), Vale (prose), lychee (links), automation.docs
+# (documentation structure) and automation.gherkin (Gherkin). The doit registry
+# itself is checked here only for its presence.
+version: 1
+
+rules:
+  - id: require-package-manifest
+    kind: file_exists
+    paths: pyshellforge/pyproject.toml
+    level: error
+    message: The distribution manifest (pyshellforge/pyproject.toml) is missing.
+
+  - id: require-package-source
+    kind: file_exists
+    paths: pyshellforge/src/pyshellforge/__init__.py
+    level: error
+    message: The package source (pyshellforge/src/pyshellforge/) is missing.
+
+  - id: require-package-readme
+    kind: file_exists
+    paths: pyshellforge/README.md
+    level: error
+    message: The distribution readme (pyshellforge/README.md) is missing; run `pixi run automation readme`.
+
+  - id: require-pixi-manifest
+    kind: file_exists
+    paths: pixi.toml
+    level: error
+    message: The developer environment (pixi.toml) is missing.
+
+  - id: require-pixi-lock
+    kind: file_exists
+    paths: pixi.lock
+    level: error
+    message: The locked developer environment (pixi.lock) is missing.
+
+  - id: require-sandbox-config
+    kind: file_exists
+    paths: pixi-sandbox.toml
+    level: error
+    message: The sandbox pack configuration (pixi-sandbox.toml) is missing.
+
+  - id: require-sandbox-workflow
+    kind: file_exists
+    paths: .github/workflows/pixi-sandbox.yml
+    level: error
+    message: The sandbox publishing workflow is missing.
+
+  - id: require-ci-workflow
+    kind: file_exists
+    paths: .github/workflows/ci.yml
+    level: error
+    message: The main CI workflow is missing.
+
+  - id: require-ruff-config
+    kind: file_exists
+    paths: ruff.toml
+    level: error
+    message: The ruff configuration is missing.
+
+  - id: require-coverage-config
+    kind: file_exists
+    paths: .coveragerc
+    level: error
+    message: The coverage configuration is missing.
+
+  - id: require-codecov-config
+    kind: file_exists
+    paths: codecov.yml
+    level: error
+    message: The Codecov configuration is missing.
+
+  - id: require-hooks
+    kind: file_exists
+    paths: lefthook.yml
+    level: error
+    message: The git hook configuration (lefthook.yml) is missing.
+
+  - id: require-convco-config
+    kind: file_exists
+    paths: .versionrc
+    level: error
+    message: The conventional-commit configuration (.versionrc) is missing.
+
+  - id: require-vale-config
+    kind: file_exists
+    paths: .vale.ini
+    level: error
+    message: The prose linter configuration (.vale.ini) is missing.
+
+  - id: require-markdownlint-config
+    kind: file_exists
+    paths: .markdownlint-cli2.yaml
+    level: error
+    message: The Markdown linter configuration is missing.
+
+  - id: require-lychee-config
+    kind: file_exists
+    paths: lychee.toml
+    level: error
+    message: The link checker configuration is missing.
+
+  - id: require-gherlint-config
+    kind: file_exists
+    paths: gherlint.toml
+    level: error
+    message: The Gherkin lint configuration is missing.
+
+  - id: require-readme
+    kind: file_exists
+    paths: README.md
+    level: error
+    message: The root README.md is missing.
+
+  - id: require-changelog
+    kind: file_exists
+    paths: CHANGELOG.md
+    level: error
+    message: The changelog is missing.
+
+  - id: require-agents-guide
+    kind: file_exists
+    paths: AGENTS.md
+    level: error
+    message: The agent instructions (AGENTS.md) are missing.
+
+  - id: require-docs-index
+    kind: file_exists
+    paths: docs/README.md
+    level: error
+    message: The documentation index docs/README.md is missing.
+
+  - id: require-docs-development
+    kind: file_exists
+    paths: docs/development/contributing.md
+    level: error
+    message: The development documentation tree (docs/development/) is missing.
+
+  - id: require-features
+    kind: file_exists
+    paths: automation/features/session_restore.feature
+    level: error
+    message: The Gherkin scenario tree (automation/features/) is missing.
+
+  - id: require-automation
+    kind: file_exists
+    paths: automation/README.md
+    level: error
+    message: Repository automation must be documented in automation/README.md.
+
+  - id: require-task-registry
+    kind: file_exists
+    paths: dodo.py
+    level: error
+    message: The doit task registry (dodo.py) is missing.
+
+  - id: require-backlog
+    kind: file_exists
+    paths: backlog/config.yml
+    level: error
+    message: The backlog is missing (backlog/config.yml).
+
+  - id: require-tox-config
+    kind: file_exists
+    paths: pyshellforge/tox.ini
+    level: error
+    message: The multi-version test matrix (pyshellforge/tox.ini) is missing.
+
+  - id: require-vale-styles
+    kind: file_exists
+    paths: .vale/styles/Microsoft/Headings.yml
+    level: error
+    message: The vendored Microsoft Vale style is missing; run `pixi run automation update-prose-styles`.
+
+  - id: require-lint-prose-task
+    kind: file_exists
+    paths: .vale.ini
+    level: error
+    message: The Vale configuration (.vale.ini) is missing.
+
+  - id: require-agents-file
+    kind: file_exists
+    paths: AGENTS.md
+    level: error
+    message: The agent instructions (AGENTS.md) are missing.
+
+  - id: require-agents-maintainer
+    kind: file_exists
+    paths: automation/agents/generate.py
+    level: error
+    message: The AGENTS.md maintainer module (automation/agents/) is missing.
+
+  - id: require-restore-script
+    kind: file_exists
+    paths: automation/restore/generate.py
+    level: error
+    message: The session restore module (automation/restore/) is missing.
+
+  - id: require-issue-forms
+    kind: file_exists
+    paths: .github/ISSUE_TEMPLATE/bug_report.yml
+    level: error
+    message: The bug report issue form (.github/ISSUE_TEMPLATE/bug_report.yml) is missing.
+
+  - id: require-feature-request-form
+    kind: file_exists
+    paths: .github/ISSUE_TEMPLATE/feature_request.yml
+    level: error
+    message: The feature request issue form (.github/ISSUE_TEMPLATE/feature_request.yml) is missing.
+
+  - id: require-issue-forms-validator
+    kind: file_exists
+    paths: automation/forms/check.py
+    level: error
+    message: The issue form validator (automation/forms/) is missing.
+
+  - id: require-release-workflow
+    kind: file_exists
+    paths: .github/workflows/release.yml
+    level: error
+    message: The release workflow (.github/workflows/release.yml) is missing.
+
+  - id: require-release-script
+    kind: file_exists
+    paths: automation/release/build.py
+    level: error
+    message: The release build module (automation/release/) is missing.

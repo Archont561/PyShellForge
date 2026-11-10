@@ -1,0 +1,37 @@
+# Git hooks. Every hook calls a locked `automation` task, so local hooks, CI and
+# documentation run exactly the same command (`pixi run automation <task>`).
+pre-commit:
+  parallel: true
+  jobs:
+    - name: python-lint
+      run: pixi run --locked automation lint
+    - name: python-format
+      run: pixi run --locked automation format-check
+    - name: python-types
+      run: pixi run --locked automation typecheck
+    - name: gherkin-lint
+      run: pixi run --locked automation lint-features
+    - name: documentation
+      run: pixi run --locked automation check-docs
+    - name: issue-forms
+      run: pixi run --locked automation check-forms
+    - name: readme-freshness
+      run: pixi run --locked automation readme-check
+    - name: agent-instructions
+      run: pixi run --locked automation agents-check
+    - name: repository-policy
+      run: pixi run --locked automation alint
+    - name: workflow-lint
+      run: pixi run --locked automation actionlint
+
+commit-msg:
+  jobs:
+    - name: conventional-commit
+      run: pixi run --locked automation lint-commit < {1}
+
+pre-push:
+  jobs:
+    - name: tests
+      run: pixi run --locked automation test
+    - name: automation-tests
+      run: pixi run --locked automation test-automation

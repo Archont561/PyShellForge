@@ -1,0 +1,15 @@
+# Backlog.md configuration.
+#
+#   pixi run backlog task list --status "To Do" --plain
+#   pixi run backlog task view <id> --plain
+#
+# Tasks, milestones and decisions are Markdown files with YAML front-matter so
+# they can be reviewed in a pull request like any other artefact.
+project_name: "PyShellForge"
+default_status: "To Do"
+statuses: ["To Do", "In Progress", "Done"]
+default_assignee: ""
+date_format: yyyy-mm-dd
+default_editor: ""
+auto_open_browser: false
+default_port: 6420

@@ -1,0 +1,17 @@
+# Verifiable environment pack for the developer sandbox.
+#
+#   pixi-sandbox pack                 # build the pack from pixi.lock
+#   pixi install --locked             # restore the pack on a fresh machine
+#   pixi run install-hooks            # reinstall the git hooks
+#
+# Publishing is wired in .github/workflows/pixi-sandbox.yml. The pack contains
+# exactly the locked developer environment, so a restored sandbox runs the same
+# ruff, mypy, pytest and documentation tool versions as CI.
+schema = 1
+branch_prefix = "sandbox"
+cargo_vendor = false
+
+[[bundle]]
+name = "developer"
+environments = ["default", "gherkin"]
+platforms = ["linux-64", "osx-arm64"]

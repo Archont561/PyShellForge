@@ -1,0 +1,45 @@
+# Repository-wide Python linting and formatting.
+# Kept in ruff.toml (not pyproject.toml) so code quality config lives beside the
+# other tool configs and applies to the package, its tests, the automation and
+# the doit registry alike.
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+  ".cache",
+  ".pixi",
+  ".venv",
+  "build",
+  "dist",
+  "*.egg-info",
+  "**/*.md",
+]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "C4", "SIM", "RUF", "PTH"]
+ignore = [
+  "E501",   # line length is enforced by the formatter
+  "B008",   # function calls in argument defaults are how the DSL works
+  "SIM108", # explicit if/else reads better in the renderer
+]
+
+[lint.isort]
+# The pytest-bdd step modules are imported by bare name (the BDD conftest puts
+# their directory on sys.path), so every one of them belongs here.
+known-first-party = [
+  "automation",
+  "pyshellforge",
+  "support",
+  "steps_agents",
+  "steps_automation_cli",
+  "steps_docs",
+  "steps_features",
+  "steps_forms",
+  "steps_readme",
+  "steps_release",
+  "steps_render",
+  "steps_restore",
+]
+known-third-party = ["pytest", "pytest_bdd", "hypothesis"]
+
+[lint.per-file-ignores]
+"pyshellforge/tests/**" = ["B011"]

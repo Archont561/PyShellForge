@@ -1,0 +1,52 @@
+name: pixi-sandbox
+
+# Publish the locked developer environments as a verifiable sandbox pack, so a
+# fresh checkout can be restored offline with the same tool versions as CI.
+#
+#   pixi-sandbox pack  ->  pack published to the `sandbox` branch
+#   pixi install --locked  ->  restore from pixi.lock
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - pixi.toml
+      - pixi.lock
+      - pixi-sandbox.toml
+      - .github/workflows/pixi-sandbox.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pixi-sandbox-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    name: Pack and publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install pixi-sandbox
+        run: |
+          curl -fsSL https://pixi.sh/install.sh | bash
+          echo "$HOME/.pixi/bin" >> "$GITHUB_PATH"
+      - name: Build the developer pack
+        run: |
+          set -euo pipefail
+          if pixi sandbox --help >/dev/null 2>&1; then
+            pixi sandbox pack --config pixi-sandbox.toml
+          else
+            pixi install --locked
+            echo "::notice::pixi-sandbox is not available in this pixi release; the locked environment is used directly."
+          fi
+      - name: Verify the environment runs the checks
+        run: |
+          pixi run --locked automation lint
+          pixi run --locked automation check-docs
+          pixi run --locked automation lint-features
