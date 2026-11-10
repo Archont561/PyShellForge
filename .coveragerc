@@ -1,7 +1,7 @@
 # Coverage configuration for both suites.
 #
 #   pixi run automation coverage-all    # tests plus the gate below
-#   tox -c pyshellforge/tox.ini -e coverage   # merge per-interpreter data
+#   tox -c packages/pyshellforge/tox.ini -e coverage   # merge per-interpreter data
 #
 # `source` names the measured trees rather than the tests, so a module that no
 # test imports counts as 0% instead of disappearing from the report. The package
@@ -15,9 +15,9 @@ source =
 # Tests describe the code, so counting them would let a low-coverage assertion
 # hide behind a high-coverage suite.
 omit =
-    pyshellforge/tests/*
-    pyshellforge-rude/tests/*
-    pyshellforge/conftest.py
+    packages/pyshellforge/tests/*
+    packages/pyshellforge-rude/tests/*
+    packages/pyshellforge/conftest.py
     automation/tests/*
 
 [report]

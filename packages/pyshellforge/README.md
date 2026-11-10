@@ -41,22 +41,22 @@
 
 ## Documentation
 
-The [`docs/`](../docs/README.md) directory is the source of truth for using and
+The [`docs/`](../../docs/README.md) directory is the source of truth for using and
 working on this repository:
 
-- [Documentation index](../docs/README.md): everything, organized by purpose
-- [Install](../docs/guides/install.md): prerequisites, installation, the locked developer sandbox
-- [Repository layout](../docs/reference/repository-layout.md): what lives where and why
-- [Linting](../docs/reference/linting.md): the Rude plugin, its rule codes, and the rules that wait for the validator
-- [Project status](../docs/concepts/version-only-scaffold.md): what exists today and what the roadmap adds
-- [Contributing](../docs/development/contributing.md): setup, the checks CI runs, the commit and merge policy
-- [Testing](../docs/development/testing.md): test layout, what each layer proves, coverage
-- [Tooling](../docs/development/tooling.md): the `automation` CLI, its task graph, hooks and linters
-- [Documentation](../docs/development/documentation.md): policy, structure, validation and definition of done
-- [Releasing](../docs/development/releasing.md): the tag-triggered release and trusted publishing
+- [Documentation index](../../docs/README.md): everything, organized by purpose
+- [Install](../../docs/guides/install.md): prerequisites, installation, the locked developer sandbox
+- [Repository layout](../../docs/reference/repository-layout.md): what lives where and why
+- [Linting](../../docs/reference/linting.md): the Rude plugin, its rule codes, and the rules that wait for the validator
+- [Project status](../../docs/concepts/version-only-scaffold.md): what exists today and what the roadmap adds
+- [Contributing](../../docs/development/contributing.md): setup, the checks CI runs, the commit and merge policy
+- [Testing](../../docs/development/testing.md): test layout, what each layer proves, coverage
+- [Tooling](../../docs/development/tooling.md): the `automation` CLI, its task graph, hooks and linters
+- [Documentation](../../docs/development/documentation.md): policy, structure, validation and definition of done
+- [Releasing](../../docs/development/releasing.md): the tag-triggered release and trusted publishing
 
-Planned work is tracked in [`backlog/`](../backlog/), and the release history is
-[`CHANGELOG.md`](../CHANGELOG.md).
+Planned work is tracked in [`backlog/`](../../backlog/), and the release history is
+[`CHANGELOG.md`](../../CHANGELOG.md).
 
 ## Install
 
@@ -87,7 +87,7 @@ pixi run automation test-all
 
 Contributions, issues and feature requests are welcome!<br />Feel free to check
 the [issues page](https://github.com/Archont561/PyShellForge/issues). You can also take a look at the
-[contributing guide](../CONTRIBUTING.md): it covers setup, the checks a change has
+[contributing guide](../../CONTRIBUTING.md): it covers setup, the checks a change has
 to pass and the merge policy.
 
 ## Show your support
@@ -101,4 +101,4 @@ This project is [MIT](https://github.com/Archont561/pyshellforge/blob/main/LICEN
 
 ***
 
-*This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator) from [`automation/readme/README.ejs`](../automation/readme/README.ejs).*
+*This README was generated with ❤️ by [readme-md-generator](https://github.com/kefranabg/readme-md-generator) from [`automation/readme/README.ejs`](../../automation/readme/README.ejs).*

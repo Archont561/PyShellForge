@@ -6,7 +6,7 @@ milestone: m-1
 labels: [backend, posix]
 created_date: 2026-11-09
 dependencies: [task-11]
-references: [pyshellforge/src/pyshellforge/__init__.py, .github/workflows/ci.yml]
+references: [packages/pyshellforge/src/pyshellforge/__init__.py, .github/workflows/ci.yml]
 ---
 
 ## Description
@@ -29,7 +29,7 @@ renderer it diverges from.
 
 ## Definition of done
 
-- [ ] Scenarios in `pyshellforge/features/` cover the accept and reject paths.
+- [ ] Scenarios in `packages/pyshellforge/features/` cover the accept and reject paths.
 - [ ] Tests pass: `pixi run automation test-all`.
 - [ ] Coverage gate passes: `pixi run automation coverage-all`.
 - [ ] Documentation updated and `pixi run automation check-docs` passes.
@@ -37,8 +37,8 @@ renderer it diverges from.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/backends/posix.py`
-- `pyshellforge/src/pyshellforge/renderers/posix.py`
+- `packages/pyshellforge/src/pyshellforge/backends/posix.py`
+- `packages/pyshellforge/src/pyshellforge/renderers/posix.py`
 - `docs/reference/backends.md`, the capability matrix every renderer extends
 
 ## Notes

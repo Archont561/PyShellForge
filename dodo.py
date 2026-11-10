@@ -48,8 +48,8 @@ DOIT_CONFIG = {
 }
 
 #: The distribution lives in its own project directory.
-PYTEST = "python -m pytest -c pyshellforge/pyproject.toml"
-TOX = "python -m tox -c pyshellforge/tox.ini"
+PYTEST = "python -m pytest -c packages/pyshellforge/pyproject.toml"
+TOX = "python -m tox -c packages/pyshellforge/tox.ini"
 
 #: The checks `check` depends on, in the order the report reads best.
 GATES: tuple[str, ...] = (
@@ -111,7 +111,7 @@ def task_check_forms() -> dict[str, object]:
 
 
 def task_readme() -> dict[str, object]:
-    """Regenerate README.md and pyshellforge/README.md from README.ejs."""
+    """Regenerate README.md and packages/pyshellforge/README.md from README.ejs."""
     return {"basename": "readme", "actions": [_run(readme.main)]}
 
 
@@ -155,7 +155,7 @@ def task_typecheck() -> dict[str, object]:
     """mypy, strict, against the project's configuration file."""
     return {
         "basename": "typecheck",
-        "actions": ["mypy --config-file pyshellforge/pyproject.toml"],
+        "actions": ["mypy --config-file packages/pyshellforge/pyproject.toml"],
     }
 
 
@@ -180,7 +180,7 @@ def task_lint_prose() -> dict[str, object]:
         "basename": "lint-prose",
         "actions": [
             "vale --config .vale.ini --no-global README.md AGENTS.md CONTRIBUTING.md "
-            "CHANGELOG.md docs pyshellforge/README.md automation/features backlog"
+            "CHANGELOG.md docs packages/pyshellforge/README.md automation/features backlog"
         ],
     }
 
@@ -208,7 +208,7 @@ def task_hooks_install() -> dict[str, object]:
 # -- tests ------------------------------------------------------------------
 def task_test() -> dict[str, object]:
     """The product suite."""
-    return {"basename": "test", "actions": [f"{PYTEST} pyshellforge/tests"]}
+    return {"basename": "test", "actions": [f"{PYTEST} packages/pyshellforge/tests"]}
 
 
 def task_test_automation() -> dict[str, object]:
@@ -220,7 +220,7 @@ def task_test_all() -> dict[str, object]:
     """Both suites."""
     return {
         "basename": "test-all",
-        "actions": [f"{PYTEST} pyshellforge/tests automation/tests"],
+        "actions": [f"{PYTEST} packages/pyshellforge/tests automation/tests"],
     }
 
 
@@ -229,7 +229,7 @@ def task_coverage() -> dict[str, object]:
     return {
         "basename": "coverage",
         "actions": [
-            f"{PYTEST} pyshellforge/tests --cov --cov-report=term-missing "
+            f"{PYTEST} packages/pyshellforge/tests --cov --cov-report=term-missing "
             "--cov-report=xml:coverage.xml"
         ],
     }
@@ -240,7 +240,7 @@ def task_coverage_all() -> dict[str, object]:
     return {
         "basename": "coverage-all",
         "actions": [
-            f"{PYTEST} pyshellforge/tests automation/tests --cov --cov-report=term-missing "
+            f"{PYTEST} packages/pyshellforge/tests automation/tests --cov --cov-report=term-missing "
             "--cov-report=xml:coverage.xml"
         ],
     }
@@ -250,7 +250,7 @@ def task_properties() -> dict[str, object]:
     """The product suite without the integration tests."""
     return {
         "basename": "properties",
-        "actions": [f"{PYTEST} pyshellforge/tests -m 'not integration' -q"],
+        "actions": [f"{PYTEST} packages/pyshellforge/tests -m 'not integration' -q"],
     }
 
 
@@ -274,7 +274,7 @@ def task_build() -> dict[str, object]:
     """Build the sdist and the wheel into dist/."""
     return {
         "basename": "build",
-        "actions": ["python -m build --outdir dist pyshellforge"],
+        "actions": ["python -m build --outdir dist packages/pyshellforge"],
     }
 
 

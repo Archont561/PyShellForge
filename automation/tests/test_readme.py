@@ -200,7 +200,9 @@ def test_generator_command_is_platform_aware() -> None:
 
 def test_project_depth_counts_directories_below_the_root() -> None:
     assert generate.project_depth(generate.REPO_ROOT / "README.md") == 0
-    assert generate.project_depth(generate.REPO_ROOT / "pyshellforge" / "README.md") == 1
+    assert (
+        generate.project_depth(generate.REPO_ROOT / "packages" / "pyshellforge" / "README.md") == 2
+    )
     assert generate.project_depth(Path("/elsewhere/README.md")) == 0
 
 

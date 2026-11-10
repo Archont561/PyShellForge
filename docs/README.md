@@ -4,9 +4,9 @@ Start with the page that matches what you are doing. Every page here is checked 
 `python -m automation.docs` (structure, navigation, links, anchors) and by
 markdownlint-cli2, Vale and lychee in CI.
 
-The generator lives in `pyshellforge/` and is a skeleton: its single module,
-`pyshellforge/src/pyshellforge/__init__.py`, exposes `VERSION`, read from the
-manifest beside it, and nothing renders shell yet. `pyshellforge-rude/` is the
+The generator lives in `packages/pyshellforge/` and is a skeleton: its single module,
+`packages/pyshellforge/src/pyshellforge/__init__.py`, exposes `VERSION`, read from the
+manifest beside it, and nothing renders shell yet. `packages/pyshellforge-rude/` is the
 second distribution, a Rude plugin that checks the casing conventions of a
 definition; it is the one thing that can be installed and used today.
 

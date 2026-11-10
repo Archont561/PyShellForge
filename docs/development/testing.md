@@ -5,33 +5,33 @@ pixi run automation test-all        # product suite + automation suite
 pixi run automation coverage-all    # the same run with the coverage gate
 ```
 
-The distribution is the `pyshellforge/` project directory, so both tasks point
+The distribution is the `packages/pyshellforge/` project directory, so both tasks point
 pytest at its configuration file and then name the suites explicitly:
 
 ```sh
-python -m pytest -c pyshellforge/pyproject.toml pyshellforge/tests automation/tests
+python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge/tests automation/tests
 ```
 
-Run from inside `pyshellforge/`, a bare `pytest` finds the same configuration and
+Run from inside `packages/pyshellforge/`, a bare `pytest` finds the same configuration and
 collects the product suite only.
 
 ## Layout
 
 | Path | Contents |
 | --- | --- |
-| `pyshellforge/tests/unit/` | `test_version.py`: `VERSION` and the order it is resolved in |
-| `pyshellforge/tests/integration/` | `test_readme.py`: the generated READMEs, their links and their metadata |
+| `packages/pyshellforge/tests/unit/` | `test_version.py`: `VERSION` and the order it is resolved in |
+| `packages/pyshellforge/tests/integration/` | `test_readme.py`: the generated READMEs, their links and their metadata |
 | `automation/tests/` | Unit and integration tests for the modules in `automation/` |
 | `automation/tests/bdd/` | Step definitions binding `automation/features/**/*.feature` with pytest-bdd |
-| `pyshellforge-rude/tests/` | The Rude plugin: rule codes, severities, and the markers that scope a file |
+| `packages/pyshellforge-rude/tests/` | The Rude plugin: rule codes, severities, and the markers that scope a file |
 | `automation/tests/bdd/conftest.py` | Registers the step modules; `pytest_plugins` is only accepted at the pytest rootdir, which this suite sits outside |
 
 The plugin exists in a second distribution, so its suite is named explicitly and
 needs that distribution installed:
 
 ```sh
-pip install -e "pyshellforge-rude[dev]"
-python -m pytest -c pyshellforge/pyproject.toml pyshellforge-rude/tests
+pip install -e "packages/pyshellforge-rude[dev]"
+python -m pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge-rude/tests
 ```
 
 CI runs it in the same invocation as the other two suites, which is what keeps the
@@ -45,7 +45,7 @@ The automation suite carries its own Gherkin scenarios in
 it are always in the same tree.
 
 The product suite is small because the package is: one module, one attribute.
-`test_version.py` covers the three resolution steps (a `pyshellforge/pyproject.toml`
+`test_version.py` covers the three resolution steps (a `packages/pyshellforge/pyproject.toml`
 found by walking up from the module, installed distribution metadata, the fallback
 constant) and the shapes of a manifest that must be rejected, so
 `import pyshellforge` is proven not to raise in a wheel, a checkout or a vendored
@@ -88,12 +88,12 @@ pixi run automation coverage-all    # what CI runs
 
 `.coveragerc` sets `source = pyshellforge, pyshellforge_rude, automation` and
 `fail_under = 90`, so the gate covers both distributions (resolved through the
-installed distributions, which the Pixi environment installs from `pyshellforge/`)
+installed distributions, which the Pixi environment installs from `packages/pyshellforge/`)
 and the repository tooling in one number. Codecov reports
 the same run; it does not fail the build, because the threshold belongs to
 coverage.py.
 
-`pyshellforge/tests/`, `pyshellforge/conftest.py` and `automation/tests/` are omitted
+`packages/pyshellforge/tests/`, `packages/pyshellforge/conftest.py` and `automation/tests/` are omitted
 from the report: they are test code, and counting them would let a low-coverage
 assertion hide behind a high-coverage suite.
 
@@ -106,7 +106,7 @@ interpreter a user might have?
 pixi run automation test-matrix       # every interpreter installed locally
 pixi run automation test-matrix-one   # the matching interpreter only
 pixi run automation coverage-merge    # merge the per-interpreter coverage data
-tox -c pyshellforge/tox.ini -e lint,typecheck   # the non-test environments
+tox -c packages/pyshellforge/tox.ini -e lint,typecheck   # the non-test environments
 ```
 
 Every environment builds a wheel and installs it with the `dev` extra in a fresh

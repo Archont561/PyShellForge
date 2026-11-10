@@ -28,8 +28,8 @@ of `$(cmd)`, `test` instead of `[ ]`/`[[ ]]`, `$status` instead of `$?`,
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/renderers/fish.py`
-- `pyshellforge/src/pyshellforge/renderers/quoting.py`, the helper `task-11` adds
+- `packages/pyshellforge/src/pyshellforge/renderers/fish.py`
+- `packages/pyshellforge/src/pyshellforge/renderers/quoting.py`, the helper `task-11` adds
 - `docs/reference/backends.md`, the capability matrix
 
 ## Definition of done

@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - python: `>=3.11`, from `requires-python` in
-  [`pyshellforge/pyproject.toml`](../../pyshellforge/pyproject.toml).
+  [`packages/pyshellforge/pyproject.toml`](../../packages/pyshellforge/pyproject.toml).
 
 No shell is a prerequisite yet, because nothing renders shell: the package
 exposes `VERSION` and nothing else. [Project status](../concepts/version-only-scaffold.md)
@@ -31,7 +31,7 @@ command -v pixi || python -m automation.restore   # installs Pixi, solves the en
 pixi run install-hooks                           # Lefthook git hooks
 ```
 
-`pip install -e "pyshellforge[dev]"` works too when you do not want Pixi. The
+`pip install -e "packages/pyshellforge[dev]"` works too when you do not want Pixi. The
 task catalogue is [Tooling](../development/tooling.md), and the checks a change
 has to pass are [Contributing](../development/contributing.md).
 

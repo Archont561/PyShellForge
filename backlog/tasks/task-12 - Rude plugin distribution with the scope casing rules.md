@@ -6,7 +6,7 @@ labels: [lint, plugins]
 created_date: 2026-11-10
 dependencies: []
 milestone: m-1
-references: [pyshellforge-rude/pyproject.toml, pyshellforge-rude/src/pyshellforge_rude/rules.py, pyshellforge-rude/tests/test_rules.py, docs/reference/linting.md, .coveragerc]
+references: [packages/pyshellforge-rude/pyproject.toml, packages/pyshellforge-rude/src/pyshellforge_rude/rules.py, packages/pyshellforge-rude/tests/test_rules.py, docs/reference/linting.md, .coveragerc]
 ---
 
 ## Description
@@ -20,16 +20,16 @@ binding inside a function becomes a `local`, so the case of a name is the only
 place a reader can see which one it is. `PSF201` and `PSF202` enforce one half of
 that pair each.
 
-The distribution is `pyshellforge-rude/`, mirroring the layout of
+The distribution is `packages/pyshellforge-rude/`, mirroring the layout of
 `Archont561/rude-clean-code`. The rules read the semantic model of Rude instead of
 columns, so imports, class bodies, `global` declarations, `self`, `cls` and `_`
 are all handled by the model rather than by a heuristic.
 
 ## Files
 
-- `pyshellforge-rude/pyproject.toml` for the manifest and the entry point
-- `pyshellforge-rude/src/pyshellforge_rude/` for `RULES` and the two rules
-- `pyshellforge-rude/tests/test_rules.py` for the suite, through `Linter.check_source`
+- `packages/pyshellforge-rude/pyproject.toml` for the manifest and the entry point
+- `packages/pyshellforge-rude/src/pyshellforge_rude/` for `RULES` and the two rules
+- `packages/pyshellforge-rude/tests/test_rules.py` for the suite, through `Linter.check_source`
 - `docs/reference/linting.md` for the layer table and the rule codes
 
 ## Acceptance criteria
@@ -47,7 +47,7 @@ are all handled by the model rather than by a heuristic.
       repository root, and CI installs it for the coverage run and builds its
       wheel in the packaging job.
 - [ ] The plugin has a release path: a tag convention, a version guard for
-      `pyshellforge-rude/pyproject.toml`, and a publish job that trusts a second
+      `packages/pyshellforge-rude/pyproject.toml`, and a publish job that trusts a second
       PyPI project.
 - [ ] A follow-up rule set for policy findings that need Python syntax only, for
       example `run()` given a single string instead of an argument list.

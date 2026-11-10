@@ -65,7 +65,7 @@ Everything inside a marker pair belongs to the CLI; everything outside, includin
 the `## Notes` section, is hand-owned and preserved. In this repository the marked
 sections are curated rather than left as a raw scan, because the CLI reads npm and
 Python manifests while the real commands live in `pixi.toml` and
-`pyshellforge/tox.ini`.
+`packages/pyshellforge/tox.ini`.
 `python -m automation.agents --check` enforces the contract: all nine sections
 present and in order, headed as the CLI expects, no unfinished stub, and no stale
 `AGENTS.generated.md` sidecar. It runs in the pre-commit hook and in CI, so a

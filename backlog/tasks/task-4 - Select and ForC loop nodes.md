@@ -24,7 +24,7 @@ need the node base that `task-11` adds.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/ast/loops.py`
+- `packages/pyshellforge/src/pyshellforge/ast/loops.py`
 
 ## Definition of done
 

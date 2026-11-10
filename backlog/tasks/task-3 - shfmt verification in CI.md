@@ -23,7 +23,7 @@ direct promise of the renderer.
 
 ## Files
 
-- `pyshellforge/tests/integration/test_bash_syntax.py`
+- `packages/pyshellforge/tests/integration/test_bash_syntax.py`
 
 ## Definition of done
 

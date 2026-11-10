@@ -27,8 +27,8 @@ needs declaring.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/backends/__init__.py`
-- `pyshellforge/src/pyshellforge/renderers/zsh.py`
+- `packages/pyshellforge/src/pyshellforge/backends/__init__.py`
+- `packages/pyshellforge/src/pyshellforge/renderers/zsh.py`
 
 ## Definition of done
 

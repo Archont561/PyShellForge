@@ -3,7 +3,7 @@ id: decision-6
 title: Lint rules ship as a Rude plugin, and the compiler owns the rest
 date: 2026-11-10
 status: Accepted
-references: [pyshellforge-rude/pyproject.toml, pyshellforge-rude/src/pyshellforge_rude/rules.py, pyshellforge-rude/tests/test_rules.py, docs/reference/linting.md, .coveragerc]
+references: [packages/pyshellforge-rude/pyproject.toml, packages/pyshellforge-rude/src/pyshellforge_rude/rules.py, packages/pyshellforge-rude/tests/test_rules.py, docs/reference/linting.md, .coveragerc]
 ---
 
 ## Context
@@ -30,7 +30,7 @@ project targets.
 
 ## Decision
 
-Ship the source-level rules as `pyshellforge-rude`, a second distribution in this
+Ship the source-level rules as `packages/pyshellforge-rude/`, a second distribution in this
 repository, and keep every rule that needs the compiler out of it.
 
 - The distribution registers its rules through the `rude.plugins` entry point,

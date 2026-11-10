@@ -20,13 +20,13 @@ Two jobs, in order:
 1. **Build and check distributions** (`build`): checks out the tag, sets up the
    locked Pixi environment, and runs `python -m automation.release`. That script
    - verifies that the tag (without its leading `v`) matches `[project].version`
-     in `pyshellforge/pyproject.toml`, and fails before building anything when it
+     in `packages/pyshellforge/pyproject.toml`, and fails before building anything when it
      does not;
    - empties `dist/`, so a stale artifact cannot ride along into an upload;
    - builds the sdist and the wheel with `python -m build` (hatchling) and checks
      both with `twine check`;
    the distributions are then uploaded as the `distributions` workflow artifact.
-   The build runs against the `pyshellforge/` project directory and writes to
+   The build runs against the `packages/pyshellforge/` project directory and writes to
    `dist/` at the repository root, so nothing uploads a stale artifact.
 2. **Publish to PyPI** (`publish`): downloads the artifact and publishes it with
    `pypa/gh-action-pypi-publish`, without checking out the repository. The job
@@ -40,7 +40,7 @@ workflow, and every `run:` step is a single line.
 
 ## Cutting a release
 
-1. Bump `version` in `pyshellforge/pyproject.toml` and commit the change. Version bumps are a
+1. Bump `version` in `packages/pyshellforge/pyproject.toml` and commit the change. Version bumps are a
    maintainer action, and `CHANGELOG.md` gets the entry in the same commit.
 2. Tag the commit with a `v`-prefixed tag that matches the version, then push it:
 

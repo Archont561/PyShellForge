@@ -24,7 +24,7 @@ pixi run install-hooks        # lefthook git hooks
 
 The environment carries every linter `pixi run automation check` needs, including Vale and
 lychee, so no task downloads a binary at run time. The distribution is installed
-editable from `[pypi-dependencies]`, which points at the `pyshellforge/` project
+editable from `[pypi-dependencies]`, which points at the `packages/pyshellforge/` project
 directory; there is no pip-based reinstall task, because the environment does not
 ship pip.
 
@@ -36,7 +36,7 @@ working copy is not a git checkout. `python -m automation.restore --check` repor
 the state and exits non-zero when the repository is not ready. Pixi keeps both
 entry points (`restore`, `install-hooks`); everything else is a doit task.
 
-`pip install -e "pyshellforge[dev]"` still works if you prefer plain pip; the
+`pip install -e "packages/pyshellforge[dev]"` still works if you prefer plain pip; the
 tasks below are the canonical commands.
 
 ## Tasks
@@ -47,16 +47,16 @@ each task's docstring.
 | Task | Runs |
 | --- | --- |
 | `pixi run restore` | `python -m automation.restore` (Pixi must already exist) |
-| `pixi run automation test` | `pytest -c pyshellforge/pyproject.toml pyshellforge/tests` |
-| `pixi run automation test-automation` | `pytest -c pyshellforge/pyproject.toml automation/tests` |
+| `pixi run automation test` | `pytest -c packages/pyshellforge/pyproject.toml packages/pyshellforge/tests` |
+| `pixi run automation test-automation` | `pytest -c packages/pyshellforge/pyproject.toml automation/tests` |
 | `pixi run automation test-all` | Both suites |
 | `pixi run automation coverage` / `coverage-all` | Coverage with `coverage.xml` |
-| `pixi run automation test-matrix` | `tox -c pyshellforge/tox.ini`: every installed interpreter, isolated virtualenvs |
+| `pixi run automation test-matrix` | `tox -c packages/pyshellforge/tox.ini`: every installed interpreter, isolated virtualenvs |
 | `pixi run automation coverage-merge` | Merge per-interpreter coverage and enforce the gate |
 | `pixi run automation lint` / `format` / `format-check` | ruff |
-| `pixi run automation typecheck` | `mypy --config-file pyshellforge/pyproject.toml` (strict) |
+| `pixi run automation typecheck` | `mypy --config-file packages/pyshellforge/pyproject.toml` (strict) |
 | `pixi run automation check-docs` | `python -m automation.docs` |
-| `pixi run automation readme` / `readme-check` | Regenerate / verify `README.md` and `pyshellforge/README.md` |
+| `pixi run automation readme` / `readme-check` | Regenerate / verify `README.md` and `packages/pyshellforge/README.md` |
 | `pixi run automation agents` / `agents-check` | Regenerate the marked AGENTS.md sections / verify the marker contract |
 | `pixi run automation lint-features` | `python -m automation.gherkin` |
 | `pixi run automation lint-markdown` | markdownlint-cli2 |
@@ -112,7 +112,7 @@ Gherkin scenarios stay Python:
 | Tool | Owns | Config |
 | --- | --- | --- |
 | ruff | Python lint and formatting | `ruff.toml` |
-| mypy | Types, strict | `pyshellforge/pyproject.toml` |
+| mypy | Types, strict | `packages/pyshellforge/pyproject.toml` |
 | coverage.py | Coverage threshold | `.coveragerc` |
 | alint | Repository structure and conventions | `.alint.yml` |
 | markdownlint-cli2 | Markdown formatting | `.markdownlint-cli2.yaml` |

@@ -5,7 +5,7 @@ status: To Do
 labels: [validation, diagnostics, core]
 created_date: 2026-11-10
 dependencies: [task-11]
-references: [pyshellforge/src/pyshellforge/__init__.py, docs/reference/linting.md, backlog/decisions/decision-6 - Lint rules ship as a Rude plugin.md]
+references: [packages/pyshellforge/src/pyshellforge/__init__.py, docs/reference/linting.md, backlog/decisions/decision-6 - Lint rules ship as a Rude plugin.md]
 ---
 
 ## Description
@@ -17,7 +17,7 @@ reach that command.
 It needs the symbol table and the capability table, so it follows `task-11`. It
 also fixes the code families that decision-6 and the plugin already assume:
 `PSF1xx` structure, `PSF2xx` names, `PSF3xx` context and portability, `PSF4xx`
-safety. `PSF201` and `PSF202` exist in `pyshellforge-rude`; the validator must
+safety. `PSF201` and `PSF202` exist in `packages/pyshellforge-rude`; the validator must
 implement the same codes with the same meaning, not new ones.
 
 The safety family is the reason the validator is worth building. A shell linter
@@ -26,11 +26,11 @@ sees the rendered `"$TARGET"` and calls it correctly quoted; the compiler knows
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/validation/` for `Diagnostic`, `DiagnosticBag`,
+- `packages/pyshellforge/src/pyshellforge/validation/` for `Diagnostic`, `DiagnosticBag`,
   `Severity`, the rule decorator and the context tracker
-- `pyshellforge/src/pyshellforge/validation/rules/` for one module per family
+- `packages/pyshellforge/src/pyshellforge/validation/rules/` for one module per family
 - `docs/reference/diagnostics.md` for the code table and the severity meanings
-- `pyshellforge/tests/unit/validation/` for one test module per rule
+- `packages/pyshellforge/tests/unit/validation/` for one test module per rule
 
 ## Acceptance criteria
 

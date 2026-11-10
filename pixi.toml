@@ -10,9 +10,9 @@
 # `install-hooks`). Everything else lives in the task registry so the task graph,
 # the discovery and the parallelism come from one place.
 #
-# `pip install -e "pyshellforge[dev]"` remains supported for contributors who do
+# `pip install -e "packages/pyshellforge[dev]"` remains supported for contributors who do
 # not want Pixi; the tasks below are the canonical commands for hooks and CI. The
-# distribution lives in `pyshellforge/`, so tasks name it explicitly.
+# distribution lives in `packages/pyshellforge/`, so tasks name it explicitly.
 [workspace]
 name = "pyshellforge"
 version = "0.1.0"
@@ -35,7 +35,7 @@ pyyaml = ">=6.0,<7"
 [pypi-dependencies]
 # The product is installed from the working tree; the build backend is pinned so
 # an editable install never needs the network to resolve hatchling.
-pyshellforge = { path = "pyshellforge", editable = true }
+pyshellforge = { path = "packages/pyshellforge", editable = true }
 hatchling = ">=1.24,<2"
 pytest = ">=8,<10"
 pytest-bdd = ">=9,<10"

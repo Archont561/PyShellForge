@@ -3,7 +3,7 @@
 ``pytest-bdd`` 9 turns every step definition into a pytest fixture, so the modules
 that define them have to be visible to pytest as plugins. ``pytest_plugins`` is
 only accepted in a conftest at the pytest rootdir, and that rootdir is
-``pyshellforge/`` -- the automation suite deliberately sits beside the automation
+``packages/pyshellforge/`` -- the automation suite deliberately sits beside the automation
 instead, outside it -- so this conftest imports the step modules itself and adopts
 the fixtures they created. A conftest's own namespace is a plugin namespace, which
 is why the adoption makes the steps visible to every scenario below it.

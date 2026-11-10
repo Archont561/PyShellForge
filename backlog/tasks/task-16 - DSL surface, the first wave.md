@@ -5,7 +5,7 @@ status: To Do
 labels: [ast, feature]
 created_date: 2026-11-10
 dependencies: [task-11]
-references: [pyshellforge/src/pyshellforge/__init__.py, docs/concepts/version-only-scaffold.md]
+references: [packages/pyshellforge/src/pyshellforge/__init__.py, docs/concepts/version-only-scaffold.md]
 ---
 
 ## Description
@@ -25,11 +25,11 @@ of `task-17`. Refused outright: `eval`, backticks, `$*`, `select` and `coproc`.
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/ast/nodes/expansion.py` for `Expand` and its kinds
-- `pyshellforge/src/pyshellforge/ast/nodes/command.py` for the redirect attribute
-- `pyshellforge/src/pyshellforge/ast/nodes/settings.py` for `set`, `umask` and `trap`
+- `packages/pyshellforge/src/pyshellforge/ast/nodes/expansion.py` for `Expand` and its kinds
+- `packages/pyshellforge/src/pyshellforge/ast/nodes/command.py` for the redirect attribute
+- `packages/pyshellforge/src/pyshellforge/ast/nodes/settings.py` for `set`, `umask` and `trap`
 - `docs/reference/api-reference.md` for the surface
-- `pyshellforge/features/` for the scenarios
+- `packages/pyshellforge/features/` for the scenarios
 
 ## Acceptance criteria
 

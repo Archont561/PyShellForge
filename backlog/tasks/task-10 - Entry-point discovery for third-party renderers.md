@@ -5,7 +5,7 @@ status: To Do
 labels: [plugins, api]
 created_date: 2026-11-09
 dependencies: [task-8, task-9]
-references: [pyshellforge/pyproject.toml, CONTRIBUTING.md]
+references: [packages/pyshellforge/pyproject.toml, CONTRIBUTING.md]
 ---
 
 ## Description
@@ -20,7 +20,7 @@ is what turns the backend contract from a guess into a fact, so this task waits 
       `ShellBackend` subclass, discovered with `importlib.metadata`.
 - [ ] `available_backends()` reports built-in and installed targets separately, and
       `psf render --shell unknown` lists both.
-- [ ] A test distribution under `pyshellforge/tests/data/plugin_package/` proves discovery,
+- [ ] A test distribution under `packages/pyshellforge/tests/data/plugin_package/` proves discovery,
       version mismatch, and a failing import that is reported rather than raised
       during rendering.
 - [ ] `docs/reference/backends.md` and `CONTRIBUTING.md` describe writing a plugin
@@ -28,8 +28,8 @@ is what turns the backend contract from a guess into a fact, so this task waits 
 
 ## Files
 
-- `pyshellforge/src/pyshellforge/backends/__init__.py`
-- `pyshellforge/tests/data/plugin_package/`
+- `packages/pyshellforge/src/pyshellforge/backends/__init__.py`
+- `packages/pyshellforge/tests/data/plugin_package/`
 
 ## Definition of done
 

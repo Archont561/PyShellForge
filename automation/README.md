@@ -33,7 +33,7 @@ tests in [`tests/`](tests/) and described in Gherkin under
 | Module | Run it with | Task | What it does |
 | --- | --- | --- | --- |
 | `automation.restore` | `python -m automation.restore` | `pixi run restore` | Installs Pixi when it is missing, solves the environment with `pixi install --locked` and installs the Lefthook hooks; `--check` reports state and changes nothing |
-| `automation.readme` | `python -m automation.readme` | `pixi run automation readme` | Regenerates `README.md` and `pyshellforge/README.md` (the PyPI long description, with its links rebased) with readme-md-generator (npm) from `automation/readme/README.ejs`; `--check` fails when either file is stale |
+| `automation.readme` | `python -m automation.readme` | `pixi run automation readme` | Regenerates `README.md` and `packages/pyshellforge/README.md` (the PyPI long description, with its links rebased) with readme-md-generator (npm) from `automation/readme/README.ejs`; `--check` fails when either file is stale |
 | `automation.agents` | `python -m automation.agents --check` | `pixi run automation agents-check` | Validates the `agents-md` marker contract in `AGENTS.md`; `--bootstrap` creates the skeleton with the pinned npm CLI |
 | `automation.docs` | `python -m automation.docs` | `pixi run automation check-docs` | Validates `docs/`: required sections, navigation index, relative links, anchors, fenced-code languages, heading structure |
 | `automation.gherkin` | `python -m automation.gherkin` | `pixi run automation lint-features` | Lints Gherkin files and verifies that every step has a `pytest-bdd` definition and every definition is used |
