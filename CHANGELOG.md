@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **The README opens with the project's ASCII banner.** It sits inside a `text`
+  fence between the title and the badges, and a fence is left exactly as written,
+  so the columns keep their alignment. A test pins the row count and the width,
+  because a trimmed or wrapped row is the whole failure mode of ASCII art.
+
 ### Changed
 
 - **The README is a landing page again.** It keeps the title, the badge row,
@@ -14,7 +21,7 @@ All notable changes to this project are documented here. The format follows
   [`docs/guides/install.md`](docs/guides/install.md),
   [`docs/reference/repository-layout.md`](docs/reference/repository-layout.md) and
   [`docs/concepts/version-only-scaffold.md`](docs/concepts/version-only-scaffold.md)
-  hold what the page used to carry. The ASCII banner, the table of contents and
+  hold what the page used to carry. The old banner, the table of contents and
   the static "tests-passing" badge are gone, so the first screen is the name, the
   badges and a link to the documentation.
 - **The `python >=3.11` badge renders.** A bare `>` ended the `alt` attribute, so

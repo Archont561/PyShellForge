@@ -185,6 +185,18 @@ def test_no_trailing_whitespace_and_single_final_newline() -> None:
 # ---------------------------------------------------------------------------
 # structure
 # ---------------------------------------------------------------------------
+def test_the_banner_keeps_its_alignment() -> None:
+    """The wordmark is monospace art: nothing may trim, wrap or reflow it."""
+    banner = [body for language, body in fenced_blocks(readme_text()) if language == "text"]
+    assert banner, "the README should open with the ASCII banner"
+    lines = banner[0].splitlines()
+    assert len(lines) == 13, "two six-row words separated by a blank line"
+    for number, line in enumerate(lines, start=1):
+        stray = set(line) - set(" █╔╗╚╝║═")
+        assert not stray, f"banner row {number} has foreign characters: {stray}"
+    assert max(len(line) for line in lines) == 99, "the banner was reflowed"
+
+
 @pytest.mark.parametrize("section", REQUIRED_SECTIONS)
 def test_required_section_present(section: str) -> None:
     assert any(section in heading for heading in headings(readme_text())), (
