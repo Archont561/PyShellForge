@@ -1,6 +1,7 @@
 # Publishes pyshellforge to PyPI with trusted publishing (OIDC).
 #
-# Trigger: pushing a version tag (v*, for example v0.1.0). The tag must match
+# Trigger: pushing a version tag (v*, for example v0.1.0), or a manual dispatch
+# against the same tag. The tag must match
 # [project].version in pyproject.toml — `python -m automation.release` enforces that
 # before anything is built, and the publish job only runs when the build job
 # succeeds. The `pypi` environment, configured in repository settings, holds the
@@ -13,6 +14,7 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,6 +28,13 @@ jobs:
     name: Build and check distributions
     runs-on: ubuntu-24.04
     steps:
+      - name: Require a version tag
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_TYPE" != tag || "$GITHUB_REF_NAME" != v* ]]; then
+            echo "::error::Release must run against a v-prefixed tag."
+            exit 1
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
