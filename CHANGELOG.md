@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-10
+
+### Added
+
+- A Bash renderer for structured comments, literal assignments, commands and
+  checked `Echo` templates, with quoting and interpolation safeguards.
+- The `ShellScript` container, initial AST nodes, a renderer interface and
+  errors for unsupported nodes and invalid interpolations.
+- Unit, property, behavior and golden-script tests, including Bash syntax and
+  formatting checks.
+- Documentation for the public API, AST design, installation and development.
+
+### Scope
+
+This release is the Bash foundation, not a complete shell DSL. It does not yet
+provide a CLI, a validation engine, control-flow nodes or other shell backends.
+The separate Rude plugin is not published by the PyShellForge release workflow.
+
+## Development history before 0.1.0
+
+The following entries describe intermediate repository states, not the final
+release surface. Some paths and functionality changed again before 0.1.0.
+
 ### Changed
 
 - **The distributions live under `packages/`.** `pyshellforge/` became
@@ -241,12 +264,12 @@ All notable changes to this project are documented here. The format follows
 - Validation, diagnostics, a CLI, and `bash -n` in CI
 - Custom renderers and the POSIX backend
 
-## [0.1.0]—2026-11-09
+### Earlier prototype, not the 0.1.0 release
 
-First public release. The engine, the shell subset, validation, the CLI,
-examples, documentation and CI are all in place.
+The following describes an earlier prototype that was removed before release;
+these features are not all present in the current package.
 
-### Added
+#### Added
 
 **Core**
 
@@ -345,7 +368,7 @@ examples, documentation and CI are all in place.
   and typing workflow.
 - `tox.ini` with matching environments.
 
-### Notes
+#### Notes
 
 - `PyShellForge` is a working name; PyPI and GitHub availability should be
   confirmed before an official release.

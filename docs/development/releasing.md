@@ -2,7 +2,7 @@
 
 The package is published by
 [`.github/workflows/release.yml`](../../.github/workflows/release.yml), triggered
-by pushing a version tag. Publishing uses
+by pushing a version tag or manually dispatching against one. Publishing uses
 [PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/) (OIDC): no API
 token is stored in this repository and no secret is read. The `pypi` GitHub
 environment holds the trust registered on PyPI, and the publish job requests its
@@ -36,7 +36,7 @@ Two jobs, in order:
 
 `build` and `twine` are part of the locked Pixi environment
 (`[pypi-dependencies]` in `pixi.toml`); nothing is installed ad hoc in the
-workflow, and every `run:` step is a single line.
+workflow; the initial guard also rejects manual runs that are not on a version tag.
 
 ## Cutting a release
 
@@ -49,9 +49,16 @@ workflow, and every `run:` step is a single line.
    git push origin v0.1.0
    ```
 
-3. The workflow builds and publishes. PyPI rejects a duplicate version, so a
-   version is published once; a failed release is re-cut with a new version, never
-   by re-tagging over a published one.
+3. The workflow builds and publishes. If a tag exists but its push did not start
+   the workflow, a maintainer can dispatch it against that tag:
+
+   ```bash
+   gh workflow run release.yml --ref v0.1.0
+   ```
+
+   Both triggers require a `v`-prefixed tag, and the version guard still applies.
+   PyPI rejects a duplicate version, so do not re-run a successful publication or
+   retag a published version.
 
 `VERSION` in the installed package comes from the same manifest, so the
 value a user prints and the value PyPI accepted cannot disagree:
