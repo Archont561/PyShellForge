@@ -17,7 +17,7 @@ cannot.
 
 [Rude](https://docs.rude.dev) is a Python linter that runs custom rules in Python
 against a semantic model of the file. `pyshellforge-rude` registers two rules
-through Rude's `rude.plugins` entry point, so installing the distribution is the
+through the `rude.plugins` entry point, so installing the distribution is the
 whole setup:
 
 ```console
@@ -93,7 +93,7 @@ pip install -e "pyshellforge-rude[dev]"
 python -m pytest -c pyshellforge/pyproject.toml pyshellforge-rude/tests
 ```
 
-The rules are tested through Rude's public `Linter` API, so a test feeds a
+The rules are tested through the public `Linter` API of Rude, so a test feeds a
 definition fragment to `check_source` and asserts on codes and lines. `.coveragerc`
 measures `pyshellforge_rude` in the same run as the rest of the repository, and
 `mypy` and ruff cover `pyshellforge-rude/src` from the repository root.
