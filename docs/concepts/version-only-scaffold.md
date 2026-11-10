@@ -11,8 +11,16 @@
 
 `VERSION` is read from `[project].version` in `pyproject.toml` when the package
 runs from a source checkout, falls back to installed distribution metadata, and
-last to a constant, so an import never fails. There is no renderer, no AST and
-no CLI yet, and nothing in the documentation describes one. The work that would
+last to a constant, so an import never fails.
+
+The one thing beyond the skeleton is a second distribution, `pyshellforge-rude/`:
+a Rude plugin that checks the two casing conventions a definition has to keep, so
+a module-level binding is `UPPER_CASE` and a function-scoped one is `lower_case`.
+It needs no renderer, which is why it could ship first; see
+[Linting](../reference/linting.md).
+
+There is no renderer, no AST and no CLI yet, and nothing in the documentation
+describes one. The work that would
 change that is tracked in [`backlog/`](../../backlog/) and
 [`CHANGELOG.md`](../../CHANGELOG.md), and the target is a Python-native DSL that
 builds structured Bash: you describe the script as objects and the library

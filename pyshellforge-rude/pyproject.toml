@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+# The rules live in their own distribution so that a Rude user gets them with one
+# install and PyShellForge itself keeps `dependencies = []`: Rude is the linter,
+# not a runtime requirement of the generator.
+[project]
+name = "pyshellforge-rude"
+version = "0.1.0"
+description = "PyShellForge conventions as rules for the Rude Python linter."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "PyShellForge contributors" }]
+keywords = ["lint", "linter", "rude", "pyshellforge", "shell", "bash"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+# Rude is pre-1.0, and a plugin is the first thing its rule API breaks.
+dependencies = ["rude>=0.1a4,<0.2"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+[project.urls]
+Repository = "https://github.com/Archont561/PyShellForge"
+Issues = "https://github.com/Archont561/PyShellForge/issues"
+Changelog = "https://github.com/Archont561/PyShellForge/blob/main/CHANGELOG.md"
+
+# Rude imports this module and reads its `RULES` list.
+[project.entry-points."rude.plugins"]
+pyshellforge_rude = "pyshellforge_rude"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pyshellforge_rude"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md"]

@@ -10,11 +10,13 @@
 [run]
 source =
     pyshellforge
+    pyshellforge_rude
     automation
 # Tests describe the code, so counting them would let a low-coverage assertion
 # hide behind a high-coverage suite.
 omit =
     pyshellforge/tests/*
+    pyshellforge-rude/tests/*
     pyshellforge/conftest.py
     automation/tests/*
 

@@ -4,9 +4,11 @@ Start with the page that matches what you are doing. Every page here is checked 
 `python -m automation.docs` (structure, navigation, links, anchors) and by
 markdownlint-cli2, Vale and lychee in CI.
 
-The distribution lives in `pyshellforge/` and is a skeleton: its single module,
+The generator lives in `pyshellforge/` and is a skeleton: its single module,
 `pyshellforge/src/pyshellforge/__init__.py`, exposes `VERSION`, read from the
-manifest beside it, and nothing renders shell yet.
+manifest beside it, and nothing renders shell yet. `pyshellforge-rude/` is the
+second distribution, a Rude plugin that checks the casing conventions of a
+definition; it is the one thing that can be installed and used today.
 
 ## Concepts
 
@@ -29,6 +31,7 @@ Installing, using and operating the project.
 | Page | Covers |
 | --- | --- |
 | [Repository layout](reference/repository-layout.md) | What lives where and why |
+| [Linting](reference/linting.md) | The Rude plugin, its rule codes, and the rules that wait for the validator |
 
 ## Development
 

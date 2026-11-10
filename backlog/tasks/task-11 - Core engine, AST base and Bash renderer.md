@@ -24,6 +24,7 @@ quoted, and how a construct the target cannot express fails.
 - `pyshellforge/src/pyshellforge/core/` for `ShellScript` and the node registry
 - `pyshellforge/src/pyshellforge/ast/` for the node base and the three nodes
 - `pyshellforge/src/pyshellforge/renderers/bash.py` for the renderer and the quoting helper
+- `pyshellforge/src/pyshellforge/ast/nodes/echo.py` for `Echo` and the interpolation kinds
 - `docs/concepts/ast-design.md` for why the tree has this shape
 - `docs/reference/api-reference.md` for the public surface
 - `pyshellforge/features/` for the scenarios, once the first node lands
@@ -40,6 +41,13 @@ quoted, and how a construct the target cannot express fails.
       bare text, single quotes and escaping.
 - [ ] A node the target cannot express raises `UnsupportedNodeError`, naming the
       node and the target.
+- [ ] `Echo` renders `printf '%s\n'` with one double-quoted argument, because
+      `echo` varies by shell and mangles text that begins with a dash.
+- [ ] In an interpolation, a declared name becomes `${NAME}` and never `$NAME`,
+      literal text escapes backslash, double quote, dollar and backtick, and a
+      name that is not declared fails with a stable diagnostic.
+- [ ] A format spec or a conversion in an interpolation is refused, and `!q`
+      renders as a runtime quote.
 - [ ] Rendered output parses: the suite runs `bash -n` over every golden script.
 
 ## Definition of done

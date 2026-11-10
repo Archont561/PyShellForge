@@ -27,6 +27,18 @@ rules:
     level: error
     message: The distribution readme (pyshellforge/README.md) is missing; run `pixi run automation readme`.
 
+  - id: require-plugin-manifest
+    kind: file_exists
+    paths: pyshellforge-rude/pyproject.toml
+    level: error
+    message: The Rude plugin manifest (pyshellforge-rude/pyproject.toml) is missing.
+
+  - id: require-plugin-source
+    kind: file_exists
+    paths: pyshellforge-rude/src/pyshellforge_rude/__init__.py
+    level: error
+    message: The plugin source (pyshellforge-rude/src/pyshellforge_rude/) is missing.
+
   - id: require-pixi-manifest
     kind: file_exists
     paths: pixi.toml

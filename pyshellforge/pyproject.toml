@@ -110,11 +110,11 @@ markers = [
 # repository root; mypy resolves these paths against the working directory.
 [tool.mypy]
 python_version = "3.11"
-files = ["pyshellforge/src", "automation", "dodo.py"]
+files = ["pyshellforge/src", "pyshellforge-rude/src", "automation", "dodo.py"]
 # `src/` layout: name the module base explicitly so `src/pyshellforge` is checked
 # as `pyshellforge`, not `pyshellforge.src.pyshellforge`. The second entry is the
 # BDD step directory, whose modules the suite imports by bare name.
-mypy_path = "pyshellforge/src:automation/tests/bdd"
+mypy_path = "pyshellforge/src:pyshellforge-rude/src:automation/tests/bdd"
 explicit_package_bases = true
 warn_unused_configs = true
 warn_redundant_casts = true

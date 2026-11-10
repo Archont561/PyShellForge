@@ -23,7 +23,19 @@ collects the product suite only.
 | `pyshellforge/tests/integration/` | `test_readme.py`: the generated READMEs, their links and their metadata |
 | `automation/tests/` | Unit and integration tests for the modules in `automation/` |
 | `automation/tests/bdd/` | Step definitions binding `automation/features/**/*.feature` with pytest-bdd |
+| `pyshellforge-rude/tests/` | The Rude plugin: rule codes, severities, and the markers that scope a file |
 | `automation/tests/bdd/conftest.py` | Registers the step modules; `pytest_plugins` is only accepted at the pytest rootdir, which this suite sits outside |
+
+The plugin exists in a second distribution, so its suite is named explicitly and
+needs that distribution installed:
+
+```sh
+pip install -e "pyshellforge-rude[dev]"
+python -m pytest -c pyshellforge/pyproject.toml pyshellforge-rude/tests
+```
+
+CI runs it in the same invocation as the other two suites, which is what keeps the
+coverage number honest.
 
 Product tests live with the product; automation tests live with the automation.
 The two suites are never mixed: `pixi run automation test` and
@@ -74,10 +86,10 @@ pixi run automation coverage        # terminal report plus coverage.xml
 pixi run automation coverage-all    # what CI runs
 ```
 
-`.coveragerc` sets `source = pyshellforge, automation` and `fail_under = 90`, so the
-gate covers the package (resolved through the installed distribution, which the
-Pixi environment installs from `pyshellforge/`) and the repository tooling in one
-number. Codecov reports
+`.coveragerc` sets `source = pyshellforge, pyshellforge_rude, automation` and
+`fail_under = 90`, so the gate covers both distributions (resolved through the
+installed distributions, which the Pixi environment installs from `pyshellforge/`)
+and the repository tooling in one number. Codecov reports
 the same run; it does not fail the build, because the threshold belongs to
 coverage.py.
 

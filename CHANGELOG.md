@@ -18,6 +18,16 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- **A Rude plugin checks the two casing conventions of a definition.**
+  `pyshellforge-rude/` is the repository's second distribution: a plugin that
+  registers `PSF201` (a module-level binding becomes a global shell variable, so
+  it is `UPPER_CASE`) and `PSF202` (a function-scoped binding becomes a `local`,
+  so it is `lower_case`) through Rude's `rude.plugins` entry point. Both report
+  at warning severity and both run only in files that mention `pyshellforge` or
+  `@sh`, so installing the plugin does not re-case unrelated Python files. The
+  rules read Rude's semantic scope model rather than columns, which is what lets
+  them ignore imports, class bodies, `global` declarations and parameters of
+  exempt names. `docs/reference/linting.md` records which layer owns which rule.
 - **The README opens with the project's ASCII banner.** The name is drawn in a
   `<pre>` block between the title and the badges. The tag is monospace in every
   renderer, so the columns keep their alignment without asking for a font, and a
