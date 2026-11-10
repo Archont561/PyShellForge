@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 
 from automation.docs import check
 
-SECTIONS = ("development",)
+SECTIONS = check.REQUIRED_SECTIONS
 
 
 def build(root: Path) -> Path:

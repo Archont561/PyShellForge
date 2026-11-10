@@ -35,7 +35,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 #: Purpose-based documentation layout. Every directory must exist and hold pages.
-REQUIRED_SECTIONS: tuple[str, ...] = ("development",)
+REQUIRED_SECTIONS: tuple[str, ...] = ("concepts", "development", "guides", "reference")
 
 #: Every documentation set needs a navigation index.
 INDEX_NAME = "README.md"

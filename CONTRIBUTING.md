@@ -20,9 +20,9 @@ Plain pip works too: `python -m venv .venv && . .venv/bin/activate`,
 
 ## What we care about
 
-* **Deterministic, readable output.** A rendering change must keep
-  the integration test suite green and the Bash block in the README in step
-  with the Python block above it.
+* **Deterministic, readable output.** Rendering is a pure function of the tree;
+  a rendering change keeps the integration tests green and the Bash example in
+  the documentation in step with the Python that produces it.
 * **Quoting safety.** Untrusted text must never become shell syntax; `RawShell`
   is the only escape hatch and it is explicit.
 * **No execution at render time.** The renderer is a pure function of the tree.

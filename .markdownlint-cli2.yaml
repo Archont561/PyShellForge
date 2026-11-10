@@ -3,8 +3,8 @@
 #   npx markdownlint-cli2 "**/*.md"
 #
 # The rules below are the defaults, relaxed only where this repository
-# deliberately differs: the README is generated (inline HTML badges and an
-# ASCII wordmark) and generated tables are long.
+# deliberately differs: the README is generated (inline HTML badges) and
+# generated tables are long.
 config:
   default: true
   MD013: false # line length is handled by prettier-style formatting, not lint
