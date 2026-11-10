@@ -190,7 +190,7 @@ def test_the_banner_keeps_its_alignment() -> None:
     banner = [body for language, body in fenced_blocks(readme_text()) if language == "text"]
     assert banner, "the README should open with the ASCII banner"
     lines = banner[0].splitlines()
-    assert len(lines) == 13, "two six-row words separated by a blank line"
+    assert len(lines) == 6, "the wordmark is six rows"
     for number, line in enumerate(lines, start=1):
         stray = set(line) - set(" █╔╗╚╝║═")
         assert not stray, f"banner row {number} has foreign characters: {stray}"
