@@ -1,0 +1,80 @@
+# Developer environment and task runner.
+#
+#   pixi install                  # create the environment from pixi.lock
+#   pixi run automation list      # every repository task
+#   pixi run automation check     # the whole gate
+#   pixi run install-hooks        # lefthook git hooks
+#
+# Repository automation is registered in `dodo.py` and driven by doit; Pixi owns
+# the environment and the entry points (`automation`, `restore`,
+# `install-hooks`). Everything else lives in the task registry so the task graph,
+# the discovery and the parallelism come from one place.
+#
+# `pip install -e "pyshellforge[dev]"` remains supported for contributors who do
+# not want Pixi; the tasks below are the canonical commands for hooks and CI. The
+# distribution lives in `pyshellforge/`, so tasks name it explicitly.
+[workspace]
+name = "pyshellforge"
+version = "0.1.0"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64"]
+
+[dependencies]
+python = ">=3.11,<3.14"
+shellcheck = ">=0.10,<1"
+lefthook = ">=2.2,<3"
+convco = ">=0.7.2,<0.8"
+actionlint = ">=1.7,<2"
+nodejs = ">=20,<23"
+# Prose and link linting, so `pixi run automation check` really is the whole gate.
+vale = ">=3.26,<4"
+lychee = ">=0.24,<1"
+# Issue-form validation (automation.forms) reads YAML.
+pyyaml = ">=6.0,<7"
+
+[pypi-dependencies]
+# The product is installed from the working tree; the build backend is pinned so
+# an editable install never needs the network to resolve hatchling.
+pyshellforge = { path = "pyshellforge", editable = true }
+hatchling = ">=1.24,<2"
+pytest = ">=8,<10"
+pytest-bdd = ">=9,<10"
+pytest-cov = ">=6,<8"
+hypothesis = ">=6,<7"
+types-pyyaml = ">=6.0,<7"
+ruff = ">=0.11,<1"
+mypy = ">=1.15,<2"
+build = ">=1.2,<2"
+twine = ">=7,<8"
+# Task runner for the repository automation (`dodo.py`).
+doit = ">=0.36,<1"
+alint = ">=0.20,<1"
+
+[tasks]
+# The entry points. Everything else is a doit task: `pixi run automation list`.
+# `automation` is the CLI; the flags after it belong to doit
+# (`-n 4` for parallelism, a task name, or nothing to list the tasks).
+automation = "doit"
+
+# `restore` is the one command that cannot live behind the environment: it is
+# what creates the environment in the first place, so it runs as plain Python.
+restore = "python -m automation.restore"
+# `automation.restore` shells out to this task once the environment exists.
+install-hooks = "lefthook install"
+
+# gherlint (and its Pydantic 1 dependency) lives in its own environment so it
+# cannot constrain the developer sandbox.
+[feature.gherkin.dependencies]
+# The gherkin environment drops the default feature, so it needs its own Python.
+python = ">=3.11,<3.14"
+
+[feature.gherkin.pypi-dependencies]
+gherlint = ">=0.5,<0.6"
+
+[feature.gherkin.tasks]
+# The registry reaches this environment through `pixi run --environment gherkin`,
+# so gherlint stays available without entering the default environment.
+lint-features-gherlint = "python -m gherlint lint automation/features"
+
+[environments]
+gherkin = { features = ["gherkin"], no-default-feature = true }

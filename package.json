@@ -1,0 +1,41 @@
+{
+  "name": "pyshellforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Python-native DSL for building, composing and rendering structured Bash scripts.",
+  "keywords": [
+    "python",
+    "bash",
+    "shell",
+    "code-generation",
+    "dsl",
+    "ast",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/Archont561/PyShellForge#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Archont561/PyShellForge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Archont561/PyShellForge/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "PyShellForge contributors",
+    "url": "https://github.com/Archont561"
+  },
+  "engines": {
+    "python": ">=3.11"
+  },
+  "scripts": {
+    "readme": "python -m automation.readme",
+    "readme:check": "python -m automation.readme --check",
+    "agents": "python -m automation.agents --bootstrap",
+    "agents:check": "python -m automation.agents --check"
+  },
+  "devDependencies": {
+    "@eugeniughelbur/agents-md": "0.1.0",
+    "readme-md-generator": "1.0.0"
+  }
+}
