@@ -190,11 +190,11 @@ def test_the_banner_keeps_its_alignment() -> None:
     banner = [body for language, body in fenced_blocks(readme_text()) if language == "text"]
     assert banner, "the README should open with the ASCII banner"
     lines = banner[0].splitlines()
-    assert len(lines) == 6, "the wordmark is six rows"
+    assert len(lines) == 13, "the name is drawn on two six-row lines"
     for number, line in enumerate(lines, start=1):
         stray = set(line) - set(" █╔╗╚╝║═")
         assert not stray, f"banner row {number} has foreign characters: {stray}"
-    assert max(len(line) for line in lines) == 99, "the banner was reflowed"
+    assert max(len(line) for line in lines) == 57, "the banner must stay inside 80 columns"
 
 
 @pytest.mark.parametrize("section", REQUIRED_SECTIONS)
