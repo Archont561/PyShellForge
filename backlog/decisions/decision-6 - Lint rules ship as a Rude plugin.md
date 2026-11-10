@@ -19,8 +19,8 @@ package, build the tree and render it.
 
 Linting the generated script with a shell linter answers a different question. It
 reports on text the user never wrote, at a line number the user cannot act on,
-and the findings that matter most — an unquoted expansion — are guarantees the
-renderer must provide rather than defects a definition can contain.
+and the finding that matters most, an unquoted expansion, is a guarantee the
+renderer must provide rather than a defect a definition can contain.
 
 A Python linter with a custom-rule API can read the same tree the compiler reads,
 in the editor, with no import. Rude qualifies: it exposes a rule base class, a
@@ -70,9 +70,9 @@ implemented once, but any later rule that both engines could express must be
 written in the validator first and mirrored only if the editor feedback is worth
 the duplicate.
 
-Anything the plugin cannot see — the target shell, declared types, whether a name
-is used — stays invisible until the validator exists, so users of the plugin alone
-get a partial check. `docs/reference/linting.md` says so rather than implying that
+Anything the plugin cannot see, such as the target shell, declared types, or
+whether a name is used, stays invisible until the validator exists, so users of
+the plugin alone get a partial check. `docs/reference/linting.md` says so rather than implying that
 a clean Rude run means a valid definition.
 
 Publishing needs its own release path: the current workflow publishes

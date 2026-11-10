@@ -82,9 +82,9 @@ the rendered script looks like. Rules that need any of those belong to
 capability tables; adding one here would duplicate that knowledge in a second
 engine and drift from it.
 
-The reverse direction matters too. Anything the renderer already guarantees — a
-quoted expansion, `set -euo pipefail` in the preamble — is a test over the
-renderer, not a lint rule about a definition.
+The reverse direction matters too. Anything the renderer already guarantees, such
+as a quoted expansion or `set -euo pipefail` in the preamble, is a test over the
+renderer and not a lint rule about a definition.
 
 ## Working on the plugin
 

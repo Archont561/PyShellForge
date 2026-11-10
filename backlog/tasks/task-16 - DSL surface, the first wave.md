@@ -20,7 +20,7 @@ belong on the command node as an attribute, not as a node of their own. Script
 options (`set`, `umask`, `trap`) are placement decisions the backend has to own,
 because only it knows what the preamble looks like.
 
-Wave two — pipelines, `case`, arrays, heredocs — follows with the capability flags
+Wave two, which covers pipelines, `case`, arrays and heredocs, follows with the capability flags
 of `task-17`. Refused outright: `eval`, backticks, `$*`, `select` and `coproc`.
 
 ## Files

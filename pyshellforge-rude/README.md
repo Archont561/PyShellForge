@@ -44,8 +44,8 @@ def build(jobs: Int = 4) -> None:
 ## Scope
 
 These rules check Python syntax and scope only. Everything that depends on
-PyShellForge semantics — a name declared but never used, a construct the target
-shell cannot express, an unset value reaching `rm` — belongs to `psf validate`,
+PyShellForge semantics, such as a name declared but never used, a construct the
+target shell cannot express, or an unset value reaching `rm`, belongs to `psf validate`,
 which the compiler owns. See the
 [linting reference](https://github.com/Archont561/PyShellForge/blob/main/docs/reference/linting.md).
 
