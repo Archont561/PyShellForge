@@ -58,7 +58,7 @@ workflow; the initial guard also rejects manual runs that are not on a version t
 
    Both triggers require a `v`-prefixed tag, and the version guard still applies.
    PyPI rejects a duplicate version, so do not re-run a successful publication or
-   retag a published version.
+   move the tag for a published version.
 
 `VERSION` in the installed package comes from the same manifest, so the
 value a user prints and the value PyPI accepted cannot disagree:
