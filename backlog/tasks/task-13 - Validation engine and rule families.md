@@ -5,6 +5,7 @@ status: To Do
 labels: [validation, diagnostics, core]
 created_date: 2026-11-10
 dependencies: [task-11]
+milestone: m-3
 references: [packages/pyshellforge/src/pyshellforge/__init__.py, docs/reference/linting.md, backlog/decisions/decision-6 - Lint rules ship as a Rude plugin.md]
 ---
 

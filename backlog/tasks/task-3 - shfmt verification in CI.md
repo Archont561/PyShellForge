@@ -5,6 +5,7 @@ status: To Do
 labels: [ci, tooling]
 created_date: 2026-11-09
 dependencies: [task-11]
+milestone: m-2
 references: [.github/workflows/ci.yml, docs/development/testing.md]
 ---
 

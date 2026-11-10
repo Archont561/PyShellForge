@@ -5,6 +5,7 @@ status: To Do
 labels: [testing, api]
 created_date: 2026-11-10
 dependencies: [task-11]
+milestone: m-3
 references: [packages/pyshellforge/pyproject.toml, docs/development/testing.md]
 ---
 

@@ -5,6 +5,7 @@ status: To Do
 labels: [cli, dx]
 created_date: 2026-11-10
 dependencies: [task-11, task-13]
+milestone: m-3
 references: [packages/pyshellforge/pyproject.toml, docs/reference/linting.md, automation/detect_changes.py]
 ---
 

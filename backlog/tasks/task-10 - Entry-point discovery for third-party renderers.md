@@ -5,6 +5,7 @@ status: To Do
 labels: [plugins, api]
 created_date: 2026-11-09
 dependencies: [task-8, task-9]
+milestone: m-4
 references: [packages/pyshellforge/pyproject.toml, CONTRIBUTING.md]
 ---
 
