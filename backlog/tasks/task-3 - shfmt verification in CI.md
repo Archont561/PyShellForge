@@ -1,7 +1,7 @@
 ---
 id: task-3
 title: Verify rendered output with shfmt in CI
-status: To Do
+status: In Progress
 labels: [ci, tooling]
 created_date: 2026-11-09
 dependencies: [task-11]
@@ -19,8 +19,8 @@ direct promise of the renderer.
 
 - [ ] CI runs `shfmt -d -i 4 -ci` over every rendered example and fails on a
       diff.
-- [ ] Snapshots are formatted with `shfmt` so the check is stable.
-- [ ] `docs/development/testing.md` explains how to run it locally.
+- [x] Snapshots are formatted with `shfmt` so the check is stable.
+- [x] `docs/development/testing.md` explains how to run it locally.
 
 ## Files
 
@@ -28,5 +28,11 @@ direct promise of the renderer.
 
 ## Definition of done
 
-- [ ] Failing check demonstrated in review (a deliberately misformatted script).
-- [ ] Documentation updated.
+- [x] A test demonstrates a failure on a deliberately misformatted script.
+- [x] Documentation updated.
+
+## Progress
+
+The workflow installs the pinned formatter and checks the golden scripts. The
+same check and the intentionally failing example pass locally; the CI run remains
+to be verified before this task is done.

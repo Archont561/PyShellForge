@@ -2,7 +2,7 @@
 
 ## Ground rules
 
-1. **The README states what exists.** The package is a skeleton; nothing here may
+1. **The README states what exists.** The Bash renderer covers a small subset; nothing here may
    describe a renderer, a node or a CLI that has no code behind it.
 2. **One source of truth for the version.** `VERSION` is read from
    `[project].version` in `packages/pyshellforge/pyproject.toml`; never hard-code a second

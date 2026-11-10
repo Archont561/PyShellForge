@@ -1,14 +1,13 @@
 """PyShellForge — the package surface.
 
-The library is being rebuilt from an empty tree, so this module is the whole
-package for now and it exposes one thing: :data:`VERSION`.
+The package exposes the script container, initial nodes and Bash renderer.
 
 The version has a single source of truth, ``[project].version`` in
 ``pyproject.toml``. Reading it at import time keeps the value honest — there is no
 second copy to forget — and it needs care in one respect: a wheel does not ship
 ``pyproject.toml``. The order below therefore degrades instead of failing, so that
 ``import pyshellforge`` works in a source checkout, from an installed
-distribution and from a vendored copy:
+distribution and from a vendored package:
 
 1. ``pyproject.toml`` found by walking up from this file (source checkout);
 2. installed distribution metadata (wheel, sdist, editable install);
@@ -28,7 +27,23 @@ import tomllib
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
-__all__ = ["VERSION"]
+from .ast import Command, Comment, Echo, Node, VariableAssignment
+from .core import ShellScript
+from .renderers import InterpolationError, UnsupportedNodeError
+from .renderers.bash import BashRenderer
+
+__all__ = [
+    "VERSION",
+    "BashRenderer",
+    "Command",
+    "Comment",
+    "Echo",
+    "InterpolationError",
+    "Node",
+    "ShellScript",
+    "UnsupportedNodeError",
+    "VariableAssignment",
+]
 
 #: Distribution name used for metadata lookups.
 DIST_NAME = "pyshellforge"
@@ -36,7 +51,7 @@ DIST_NAME = "pyshellforge"
 #: File searched for when no metadata is installed.
 PYPROJECT_NAME = "pyproject.toml"
 
-#: Last resort, so that a vendored or partial checkout still imports.
+#: Last resort, so that a vendored package still imports.
 FALLBACK_VERSION = "0.1.0"
 
 #: Conservative check so a malformed file cannot leak garbage into a version string.

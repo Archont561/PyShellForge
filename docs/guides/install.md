@@ -5,8 +5,8 @@
 - python: `>=3.11`, from `requires-python` in
   [`packages/pyshellforge/pyproject.toml`](../../packages/pyshellforge/pyproject.toml).
 
-No shell is a prerequisite yet, because nothing renders shell: the package
-exposes `VERSION` and nothing else. [Project status](../concepts/version-only-scaffold.md)
+The renderer produces Bash scripts; running those scripts requires Bash. Importing
+and rendering with the package does not require a shell. [Project status](../concepts/version-only-scaffold.md)
 says what exists today and what the roadmap adds.
 
 ## Install the package

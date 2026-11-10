@@ -101,7 +101,8 @@ def task_lint_features_gherlint() -> dict[str, object]:
     return {
         "basename": "lint-features-gherlint",
         "actions": [
-            "pixi run --locked --environment gherkin -- python -m gherlint lint automation/features"
+            "pixi run --locked --environment gherkin -- python -m gherlint lint automation/features",
+            "pixi run --locked --environment gherkin -- python -m gherlint lint packages/pyshellforge/features",
         ],
     }
 
